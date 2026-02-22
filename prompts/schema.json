@@ -1,0 +1,21 @@
+{
+    "type": "object",
+    "properties": {
+        "title": {"type": "string"},
+        "authors": {"type": "array", "items": {"type": "string"}},
+        "year": {"type": "integer"},
+        "abstract_summary": {"type": "string"},
+        "key_contributions": {"type": "array", "items": {"type": "string"}},
+        "methodology": {"type": "string"},
+        "main_results": {"type": "string"},
+        "limitations": {"type": "array", "items": {"type": "string"}},
+        "connections": {"type": "string"},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "confidence_notes": {"type": "string"}
+    },
+    "required": [
+        "title", "authors", "year", "abstract_summary",
+        "key_contributions", "methodology", "main_results",
+        "limitations", "connections", "tags"
+    ]
+}

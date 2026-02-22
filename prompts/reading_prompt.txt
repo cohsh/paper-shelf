@@ -1,0 +1,32 @@
+You are an expert academic paper reader. Your task is to carefully read the following academic paper and extract structured information.
+
+PAPER TEXT:
+---
+{paper_text}
+---
+
+Please analyze this paper and provide the following information as JSON:
+
+1. "title": The exact title of the paper.
+
+2. "authors": A list of all authors, in the format "LastName, FirstInitial." (e.g., "Vaswani, A.").
+
+3. "year": The publication year (integer). If not explicitly stated, estimate from context clues.
+
+4. "abstract_summary": A 2-4 sentence summary of the paper's core thesis. Write this in your own words.
+
+5. "key_contributions": A list of 3-7 specific contributions or novel findings. Each should be one concise sentence.
+
+6. "methodology": A 2-5 sentence description of the research methodology, experimental setup, or theoretical framework.
+
+7. "main_results": A 2-5 sentence summary of the primary results, including quantitative findings where available.
+
+8. "limitations": A list of 2-5 limitations, weaknesses, or open questions.
+
+9. "connections": How this work relates to the broader field. Mention 2-4 related papers or research directions.
+
+10. "tags": A list of 3-8 short keyword tags for categorizing this paper (e.g., "deep-learning", "computer-vision").
+
+11. "confidence_notes": Briefly note any sections where text extraction may have been poor or your analysis may be uncertain.
+
+Respond ONLY with valid JSON matching the required schema. Do not include any preamble or conversational text.
