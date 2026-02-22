@@ -9,3 +9,5 @@ dist/
 src/server/static/
 web/node_modules/
 web/dist/
+.DS_Store
+*.tsbuildinfo
