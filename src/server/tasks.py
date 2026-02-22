@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import logging
 import os
 import threading
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -72,7 +75,8 @@ def run_reading_pipeline(
             )
             try:
                 results["claude"] = reader_claude.read(paper)
-            except PaperReaderError:
+            except PaperReaderError as e:
+                logger.error("Claude reader failed: %s", e)
                 if reader_choice == "claude":
                     raise
 
@@ -84,7 +88,8 @@ def run_reading_pipeline(
             )
             try:
                 results["codex"] = reader_codex.read(paper)
-            except PaperReaderError:
+            except PaperReaderError as e:
+                logger.error("Codex reader failed: %s", e)
                 if reader_choice == "codex":
                     raise
 
@@ -107,6 +112,7 @@ def run_reading_pipeline(
             completed_at=datetime.now(timezone.utc).isoformat(),
         )
     except Exception as e:
+        logger.error("Reading pipeline failed: %s", e, exc_info=True)
         task_manager.update(
             task_id,
             status="failed",

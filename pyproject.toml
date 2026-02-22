@@ -22,6 +22,9 @@ dev = [
     "pytest-mock>=3.12.0",
 ]
 
+[tool.setuptools.packages.find]
+include = ["src*"]
+
 [build-system]
 requires = ["setuptools>=75.0"]
 build-backend = "setuptools.build_meta"

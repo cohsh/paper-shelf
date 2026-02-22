@@ -39,11 +39,14 @@ def read(paper: ExtractedPaper) -> dict:
         ]
 
         logger.info("Running Claude CLI...")
+        # Remove CLAUDECODE env var to avoid nested session error
+        env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
             timeout=600,
+            env=env,
         )
 
         if result.returncode != 0:
@@ -69,21 +72,64 @@ def _parse_response(stdout: str) -> dict:
     except json.JSONDecodeError:
         raise ClaudeReaderError(f"Failed to parse Claude response as JSON: {stdout[:500]}")
 
-    # Claude CLI --output-format json wraps the result
+    # Claude CLI --output-format json wraps the result in {"result": "..."}
     if isinstance(response, dict):
-        # Try to extract the structured content from the response
-        if "result" in response:
-            text = response["result"]
-            # The result may be a JSON string inside the text
-            try:
-                return json.loads(text)
-            except (json.JSONDecodeError, TypeError):
-                pass
+        text = response.get("result", "")
+        if text:
+            parsed = _extract_json(text)
+            if parsed:
+                return parsed
         # The response itself might be the structured output
         if "title" in response:
             return response
 
     raise ClaudeReaderError("Could not extract structured data from Claude response")
+
+
+def _extract_json(text: str) -> dict | None:
+    """Extract JSON from text that may contain markdown code blocks or extra text."""
+    # Try direct parse
+    try:
+        data = json.loads(text)
+        if isinstance(data, dict) and "title" in data:
+            return data
+    except json.JSONDecodeError:
+        pass
+
+    # Try extracting from markdown code block
+    if "```json" in text:
+        start = text.index("```json") + 7
+        end = text.index("```", start)
+        try:
+            return json.loads(text[start:end].strip())
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    if "```" in text:
+        start = text.index("```") + 3
+        end = text.index("```", start)
+        try:
+            return json.loads(text[start:end].strip())
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # Try finding JSON object in text
+    brace_start = text.find("{")
+    if brace_start >= 0:
+        depth = 0
+        for i in range(brace_start, len(text)):
+            if text[i] == "{":
+                depth += 1
+            elif text[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    try:
+                        return json.loads(text[brace_start : i + 1])
+                    except json.JSONDecodeError:
+                        pass
+                    break
+
+    return None
 
 
 def _load_prompt() -> str:
