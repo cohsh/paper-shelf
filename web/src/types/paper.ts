@@ -13,11 +13,17 @@ export interface ReadingResult {
   authors: string[];
   year: number;
   abstract_summary: string;
+  abstract_summary_ja?: string;
   key_contributions: string[];
+  key_contributions_ja?: string[];
   methodology: string;
+  methodology_ja?: string;
   main_results: string;
+  main_results_ja?: string;
   limitations: string[];
+  limitations_ja?: string[];
   connections: string;
+  connections_ja?: string;
   tags: string[];
   confidence_notes?: string;
   summary_ja?: string;

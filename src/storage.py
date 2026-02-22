@@ -153,9 +153,20 @@ def _render_markdown(record: dict) -> str:
             lines.append(r["abstract_summary"])
             lines.append("")
 
+        if r.get("abstract_summary_ja"):
+            lines.append("### 概要 (Abstract Summary)")
+            lines.append(r["abstract_summary_ja"])
+            lines.append("")
+
         if r.get("key_contributions"):
             lines.append("### Key Contributions")
             for item in r["key_contributions"]:
+                lines.append(f"- {item}")
+            lines.append("")
+
+        if r.get("key_contributions_ja"):
+            lines.append("### 主要な貢献 (Key Contributions)")
+            for item in r["key_contributions_ja"]:
                 lines.append(f"- {item}")
             lines.append("")
 
@@ -164,9 +175,19 @@ def _render_markdown(record: dict) -> str:
             lines.append(r["methodology"])
             lines.append("")
 
+        if r.get("methodology_ja"):
+            lines.append("### 手法 (Methodology)")
+            lines.append(r["methodology_ja"])
+            lines.append("")
+
         if r.get("main_results"):
             lines.append("### Main Results")
             lines.append(r["main_results"])
+            lines.append("")
+
+        if r.get("main_results_ja"):
+            lines.append("### 主な結果 (Main Results)")
+            lines.append(r["main_results_ja"])
             lines.append("")
 
         if r.get("limitations"):
@@ -175,14 +196,20 @@ def _render_markdown(record: dict) -> str:
                 lines.append(f"- {item}")
             lines.append("")
 
+        if r.get("limitations_ja"):
+            lines.append("### 限界・課題 (Limitations)")
+            for item in r["limitations_ja"]:
+                lines.append(f"- {item}")
+            lines.append("")
+
         if r.get("connections"):
             lines.append("### Connections")
             lines.append(r["connections"])
             lines.append("")
 
-        if r.get("summary_ja"):
-            lines.append("### 日本語まとめ")
-            lines.append(r["summary_ja"])
+        if r.get("connections_ja"):
+            lines.append("### 関連研究 (Connections)")
+            lines.append(r["connections_ja"])
             lines.append("")
 
         if r.get("confidence_notes"):

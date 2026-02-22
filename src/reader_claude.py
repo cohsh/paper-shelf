@@ -99,19 +99,21 @@ def _extract_json(text: str) -> dict | None:
     # Try extracting from markdown code block
     if "```json" in text:
         start = text.index("```json") + 7
-        end = text.index("```", start)
-        try:
-            return json.loads(text[start:end].strip())
-        except (json.JSONDecodeError, ValueError):
-            pass
+        end = text.find("```", start)
+        if end != -1:
+            try:
+                return json.loads(text[start:end].strip())
+            except (json.JSONDecodeError, ValueError):
+                pass
 
     if "```" in text:
         start = text.index("```") + 3
-        end = text.index("```", start)
-        try:
-            return json.loads(text[start:end].strip())
-        except (json.JSONDecodeError, ValueError):
-            pass
+        end = text.find("```", start)
+        if end != -1:
+            try:
+                return json.loads(text[start:end].strip())
+            except (json.JSONDecodeError, ValueError):
+                pass
 
     # Try finding JSON object in text
     brace_start = text.find("{")
