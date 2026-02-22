@@ -38,7 +38,7 @@ export default function PaperDetailPage() {
       <div className="empty-state">
         <h3>Paper not found</h3>
         <p>{error}</p>
-        <Link to="/library">Back to Library</Link>
+        <Link to="/library">Back to Shelf</Link>
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function PaperDetailPage() {
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <Link to="/library">&larr; Back to Library</Link>
+        <Link to="/library">&larr; Back to Shelf</Link>
       </div>
 
       <div className="paper-header">

@@ -17,14 +17,14 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="layout">
       <nav className="nav">
         <Link to="/library" className="nav-logo">
-          Paper Reader
+          Paper Shelf
         </Link>
         <div className="nav-links">
           <Link
             to="/library"
             className={`nav-link ${location.pathname === "/library" ? "active" : ""}`}
           >
-            Library
+            Shelf
           </Link>
           <Link
             to="/upload"

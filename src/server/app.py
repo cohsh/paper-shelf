@@ -10,7 +10,7 @@ from src.server.tasks import TaskManager
 
 
 def create_app(output_dir: str = "library", dev_mode: bool = False) -> FastAPI:
-    app = FastAPI(title="Paper Reader", version="0.1.0")
+    app = FastAPI(title="Paper Shelf", version="0.1.0")
 
     app.state.output_dir = output_dir
     app.state.task_manager = TaskManager()

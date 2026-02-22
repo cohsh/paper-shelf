@@ -135,7 +135,7 @@ def list_papers(fmt: str, sort_by: str, output_dir: str) -> None:
         console.print(json.dumps(papers, ensure_ascii=False, indent=2))
         return
 
-    table = Table(title="Paper Library")
+    table = Table(title="Paper Shelf")
     table.add_column("Title", style="cyan", max_width=50)
     table.add_column("Authors", max_width=30)
     table.add_column("Year", justify="center")
@@ -217,7 +217,7 @@ def serve(host: str, port: int, output_dir: str, dev: bool) -> None:
     from src.server.app import create_app
 
     app = create_app(output_dir=output_dir, dev_mode=dev)
-    console.print("[bold]Starting Paper Reader web UI[/bold]")
+    console.print("[bold]Starting Paper Shelf web UI[/bold]")
     console.print(f"  http://{host}:{port}")
     console.print(f"  Library: {output_dir}")
     if dev:
