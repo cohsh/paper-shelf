@@ -116,6 +116,10 @@ paper-shelf/
 3. **Store** — Results are saved as JSON + Markdown, source PDF is archived
 4. **Browse** — View, search, and compare readings through the web UI or CLI
 
+## Development Note
+
+This project was built entirely with [Claude Code](https://claude.com/claude-code).
+
 ## License
 
 MIT
