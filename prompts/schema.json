@@ -11,11 +11,12 @@
         "limitations": {"type": "array", "items": {"type": "string"}},
         "connections": {"type": "string"},
         "tags": {"type": "array", "items": {"type": "string"}},
-        "confidence_notes": {"type": "string"}
+        "confidence_notes": {"type": "string"},
+        "summary_ja": {"type": "string"}
     },
     "required": [
         "title", "authors", "year", "abstract_summary",
         "key_contributions", "methodology", "main_results",
-        "limitations", "connections", "tags"
+        "limitations", "connections", "tags", "summary_ja"
     ]
 }

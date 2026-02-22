@@ -20,6 +20,7 @@ export interface ReadingResult {
   connections: string;
   tags: string[];
   confidence_notes?: string;
+  summary_ja?: string;
 }
 
 export interface PaperDetail {

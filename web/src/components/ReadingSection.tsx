@@ -38,6 +38,13 @@ export default function ReadingSection({ reading, readerName }: Props) {
       <h3>Connections</h3>
       <p>{reading.connections}</p>
 
+      {reading.summary_ja && (
+        <>
+          <h3>日本語まとめ</h3>
+          <p style={{ lineHeight: 1.9 }}>{reading.summary_ja}</p>
+        </>
+      )}
+
       {reading.confidence_notes && (
         <>
           <h3>Confidence Notes</h3>

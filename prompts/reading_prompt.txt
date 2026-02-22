@@ -29,4 +29,6 @@ Please analyze this paper and provide the following information as JSON:
 
 11. "confidence_notes": Briefly note any sections where text extraction may have been poor or your analysis may be uncertain.
 
+12. "summary_ja": A comprehensive summary of the paper written entirely in Japanese (日本語). Include: what problem the paper addresses, the proposed approach, key results, and significance. Write 5-10 sentences in natural Japanese.
+
 Respond ONLY with valid JSON matching the required schema. Do not include any preamble or conversational text.

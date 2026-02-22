@@ -180,6 +180,11 @@ def _render_markdown(record: dict) -> str:
             lines.append(r["connections"])
             lines.append("")
 
+        if r.get("summary_ja"):
+            lines.append("### 日本語まとめ")
+            lines.append(r["summary_ja"])
+            lines.append("")
+
         if r.get("confidence_notes"):
             lines.append("### Confidence Notes")
             lines.append(r["confidence_notes"])
