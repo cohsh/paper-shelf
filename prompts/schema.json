@@ -27,6 +27,7 @@
         "main_results", "main_results_ja",
         "limitations", "limitations_ja",
         "connections", "connections_ja",
-        "tags"
-    ]
+        "tags", "confidence_notes"
+    ],
+    "additionalProperties": false
 }

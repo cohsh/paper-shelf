@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
+import shutil
 import unicodedata
 from datetime import datetime, timezone
 
 from src.exceptions import StorageError
+
+logger = logging.getLogger(__name__)
 
 
 def save(
@@ -46,6 +50,20 @@ def save(
             f.write(md_content)
     except OSError as e:
         raise StorageError(f"Failed to write Markdown file: {e}") from e
+
+    # Save source PDF
+    if source_path and os.path.exists(source_path):
+        pdf_dir = os.path.join(output_dir, "pdfs")
+        os.makedirs(pdf_dir, exist_ok=True)
+        pdf_dest = os.path.join(pdf_dir, f"{paper_id}.pdf")
+        try:
+            shutil.copy2(source_path, pdf_dest)
+            record["source_file"] = pdf_dest
+            # Update JSON with the saved PDF path
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(record, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            logger.warning("Failed to save source PDF: %s", e)
 
     return paper_id
 

@@ -68,7 +68,15 @@ export default function PaperDetailPage() {
 
       <ReaderComparison readings={paper.readings} />
 
-      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
+      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)", display: "flex", gap: 12 }}>
+        <a
+          className="btn"
+          href={`/api/papers/${id}/pdf`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View PDF
+        </a>
         <button className="btn btn-danger" onClick={handleDelete}>
           Delete Paper
         </button>
