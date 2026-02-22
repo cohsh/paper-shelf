@@ -31,6 +31,7 @@ def read(paper: ExtractedPaper) -> dict:
         )
 
     prompt_template = _load_prompt()
+    schema = _load_schema()
     text = paper.text
     if len(text) > MAX_TEXT_LENGTH:
         logger.warning(
@@ -40,13 +41,29 @@ def read(paper: ExtractedPaper) -> dict:
 
     prompt = prompt_template.replace("{paper_text}", text)
 
+    # Write prompt to temp file to avoid argument size limitations
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".txt", delete=False, prefix="paper_codex_"
+    ) as f:
+        f.write(prompt)
+        prompt_file = f.name
+
+    # Write schema to temp file for --output-schema
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", delete=False, prefix="schema_codex_"
+    ) as f:
+        json.dump(schema, f)
+        schema_file = f.name
+
     output_file = tempfile.mktemp(suffix=".json", prefix="codex_output_")
 
     try:
         cmd = [
             "codex", "exec",
-            prompt,
+            f"Read the file at {prompt_file} and follow the instructions in it. "
+            f"Respond ONLY with valid JSON matching the schema.",
             "--full-auto",
+            "--output-schema", schema_file,
             "-o", output_file,
         ]
 
@@ -71,6 +88,11 @@ def read(paper: ExtractedPaper) -> dict:
             "Codex CLI not found. Install it with: npm install -g @openai/codex"
         )
     finally:
+        for path in (prompt_file, schema_file):
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
         if os.path.exists(output_file):
             os.unlink(output_file)
 
@@ -81,19 +103,21 @@ def _parse_output(output_file: str, stdout: str) -> dict:
     if os.path.exists(output_file):
         with open(output_file) as f:
             content = f.read().strip()
-        try:
-            return _extract_json(content)
-        except CodexReaderError:
-            pass
+        if content:
+            parsed = _extract_json(content)
+            if parsed:
+                return parsed
 
-    # Fallback to stdout
+    # Fallback to stdout (final agent message is printed to stdout)
     if stdout.strip():
-        return _extract_json(stdout.strip())
+        parsed = _extract_json(stdout.strip())
+        if parsed:
+            return parsed
 
     raise CodexReaderError("No output received from Codex CLI")
 
 
-def _extract_json(text: str) -> dict:
+def _extract_json(text: str) -> dict | None:
     """Extract JSON from text that may contain markdown code blocks or extra text."""
     # Try direct parse
     try:
@@ -106,19 +130,21 @@ def _extract_json(text: str) -> dict:
     # Try extracting from markdown code block
     if "```json" in text:
         start = text.index("```json") + 7
-        end = text.index("```", start)
-        try:
-            return json.loads(text[start:end].strip())
-        except (json.JSONDecodeError, ValueError):
-            pass
+        end = text.find("```", start)
+        if end != -1:
+            try:
+                return json.loads(text[start:end].strip())
+            except (json.JSONDecodeError, ValueError):
+                pass
 
     if "```" in text:
         start = text.index("```") + 3
-        end = text.index("```", start)
-        try:
-            return json.loads(text[start:end].strip())
-        except (json.JSONDecodeError, ValueError):
-            pass
+        end = text.find("```", start)
+        if end != -1:
+            try:
+                return json.loads(text[start:end].strip())
+            except (json.JSONDecodeError, ValueError):
+                pass
 
     # Try finding JSON object in text
     brace_start = text.find("{")
@@ -136,10 +162,16 @@ def _extract_json(text: str) -> dict:
                         pass
                     break
 
-    raise CodexReaderError(f"Failed to extract JSON from Codex output: {text[:500]}")
+    return None
 
 
 def _load_prompt() -> str:
     path = os.path.normpath(PROMPT_PATH)
     with open(path) as f:
         return f.read()
+
+
+def _load_schema() -> dict:
+    path = os.path.normpath(SCHEMA_PATH)
+    with open(path) as f:
+        return json.load(f)
