@@ -205,5 +205,26 @@ def show(paper_id: str, raw: bool, output_dir: str) -> None:
         console.print(Markdown(content))
 
 
+@cli.command()
+@click.option("--host", default="127.0.0.1", help="Bind host")
+@click.option("--port", default=8000, type=int, help="Bind port")
+@click.option("--output-dir", type=click.Path(), default="library", help="Library directory")
+@click.option("--dev", is_flag=True, help="Enable CORS for Vite dev server on port 5173")
+def serve(host: str, port: int, output_dir: str, dev: bool) -> None:
+    """Start the web interface."""
+    import uvicorn
+
+    from src.server.app import create_app
+
+    app = create_app(output_dir=output_dir, dev_mode=dev)
+    console.print("[bold]Starting Paper Reader web UI[/bold]")
+    console.print(f"  http://{host}:{port}")
+    console.print(f"  Library: {output_dir}")
+    if dev:
+        console.print("  [yellow]Dev mode: CORS enabled for http://localhost:5173[/yellow]")
+
+    uvicorn.run(app, host=host, port=port, log_level="info")
+
+
 if __name__ == "__main__":
     cli()

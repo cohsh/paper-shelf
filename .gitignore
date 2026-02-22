@@ -6,3 +6,6 @@ __pycache__/
 dist/
 *.egg-info/
 .env
+src/server/static/
+web/node_modules/
+web/dist/
