@@ -11,6 +11,7 @@ export default function PaperDetailPage() {
   const [paper, setPaper] = useState<PaperDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPdf, setShowPdf] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -43,6 +44,7 @@ export default function PaperDetailPage() {
   }
 
   const authors = paper.authors.length > 0 ? paper.authors.join(", ") : "Unknown";
+  const pdfUrl = `/api/papers/${id}/pdf`;
 
   return (
     <div>
@@ -68,15 +70,31 @@ export default function PaperDetailPage() {
 
       <ReaderComparison readings={paper.readings} />
 
-      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)", display: "flex", gap: 12 }}>
-        <a
+      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
+        <button
           className="btn"
-          href={`/api/papers/${id}/pdf`}
-          target="_blank"
-          rel="noopener noreferrer"
+          onClick={() => setShowPdf((v) => !v)}
         >
-          View PDF
-        </a>
+          {showPdf ? "Hide PDF" : "Show PDF"}
+        </button>
+      </div>
+
+      {showPdf && (
+        <div style={{ marginTop: 16 }}>
+          <iframe
+            src={pdfUrl}
+            title="Paper PDF"
+            style={{
+              width: "100%",
+              height: "80vh",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius)",
+            }}
+          />
+        </div>
+      )}
+
+      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
         <button className="btn btn-danger" onClick={handleDelete}>
           Delete Paper
         </button>

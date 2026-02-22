@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 
 from src import library
 from src.exceptions import StorageError
@@ -56,12 +56,16 @@ def get_paper_markdown(paper_id: str, request: Request) -> dict:
 
 
 @router.get("/papers/{paper_id}/pdf")
-def get_paper_pdf(paper_id: str, request: Request) -> FileResponse:
+def get_paper_pdf(paper_id: str, request: Request) -> StreamingResponse:
     output_dir = request.app.state.output_dir
     pdf_path = os.path.join(output_dir, "pdfs", f"{paper_id}.pdf")
     if not os.path.exists(pdf_path):
         raise HTTPException(status_code=404, detail=f"PDF not found: {paper_id}")
-    return FileResponse(pdf_path, media_type="application/pdf", filename=f"{paper_id}.pdf")
+    return StreamingResponse(
+        open(pdf_path, "rb"),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{paper_id}.pdf"'},
+    )
 
 
 @router.delete("/papers/{paper_id}")
