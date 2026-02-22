@@ -40,7 +40,7 @@ cd web && npm install && npm run build && cd ..
 #### Web UI
 
 ```bash
-paper-reader serve
+paper-shelf serve
 # Open http://localhost:8000
 ```
 
@@ -50,26 +50,26 @@ Upload PDFs via the web interface, choose a reader (Claude / Codex / Both), and 
 
 ```bash
 # Read a paper
-paper-reader read paper.pdf
+paper-shelf read paper.pdf
 
 # Read with a specific reader
-paper-reader read paper.pdf --reader claude
+paper-shelf read paper.pdf --reader claude
 
 # List papers in your library
-paper-reader list
+paper-shelf list
 
 # Search papers
-paper-reader search "quantum"
+paper-shelf search "quantum"
 
 # Show a paper's reading
-paper-reader show <paper-id>
+paper-shelf show <paper-id>
 ```
 
 ### Development
 
 ```bash
 # Backend
-paper-reader serve --dev
+paper-shelf serve --dev
 
 # Frontend (separate terminal)
 cd web && npm run dev

@@ -1,6 +1,6 @@
-# Paper Reading via LLM
+# Paper Shelf
 
-Python 3.11+ project. CLI tool that reads academic papers with Claude and Codex.
+Python 3.11+ project. A personal academic paper library powered by LLMs.
 
 ## Structure
 - `src/` - Source code
@@ -12,4 +12,4 @@ Python 3.11+ project. CLI tool that reads academic papers with Claude and Codex.
 ## Commands
 - Run tests: `pytest`
 - Install: `pip install -e ".[dev]"`
-- CLI: `paper-reader read <pdf_path>`
+- CLI: `paper-shelf read <pdf_path>`

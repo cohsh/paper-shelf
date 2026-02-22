@@ -13,7 +13,7 @@ from src import library, pdf_extractor, reader_claude, reader_codex, storage
 from src.exceptions import ClaudeReaderError, CodexReaderError, PaperReaderError
 
 console = Console()
-logger = logging.getLogger("paper-reader")
+logger = logging.getLogger("paper-shelf")
 
 
 @click.group()

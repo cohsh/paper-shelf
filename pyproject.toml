@@ -1,7 +1,7 @@
 [project]
-name = "paper-reading-via-llm"
+name = "paper-shelf"
 version = "0.1.0"
-description = "CLI tool for reading academic papers with Claude and Codex"
+description = "A personal academic paper library powered by LLMs"
 requires-python = ">=3.11"
 dependencies = [
     "pymupdf>=1.25.0",
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-paper-reader = "src.main:cli"
+paper-shelf = "src.main:cli"
 
 [project.optional-dependencies]
 dev = [
