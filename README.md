@@ -167,7 +167,7 @@ paper-shelf/
 
 ## Development Note
 
-This project was built entirely with [Claude Code](https://claude.com/claude-code) (Claude Opus 4.6).
+This project was built entirely with [Claude Code](https://claude.com/claude-code) (Claude Opus 4.6) — no code was written by hand.
 
 ## License
 
