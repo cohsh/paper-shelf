@@ -2,6 +2,7 @@ import type {
   ChatMessage,
   CritiqueResult,
   DiscoveryResult,
+  FeedResult,
   PaperDetail,
   PaperListResponse,
   Shelf,
@@ -142,10 +143,42 @@ export async function getDiscovered(
   return fetchJSON(`${BASE}/papers/${paperId}/discover`);
 }
 
-export async function discoverForLibrary(): Promise<{ task_id: string }> {
-  return fetchJSON(`${BASE}/discover`, { method: "POST" });
+export async function discoverForLibrary(
+  shelfId?: string | null
+): Promise<{ task_id: string }> {
+  const qs = shelfId ? `?shelf=${shelfId}` : "";
+  return fetchJSON(`${BASE}/discover${qs}`, { method: "POST" });
 }
 
-export async function getLibraryDiscovery(): Promise<DiscoveryResult> {
-  return fetchJSON(`${BASE}/discover`);
+export async function getLibraryDiscovery(
+  shelfId?: string | null
+): Promise<DiscoveryResult> {
+  const qs = shelfId ? `?shelf=${shelfId}` : "";
+  return fetchJSON(`${BASE}/discover${qs}`);
+}
+
+// --- Daily Feed API ---
+
+export async function refreshFeed(
+  shelfId: string
+): Promise<{ task_id: string }> {
+  return fetchJSON(`${BASE}/shelves/${shelfId}/feed`, {
+    method: "POST",
+  });
+}
+
+export async function getFeed(shelfId: string): Promise<FeedResult> {
+  return fetchJSON(`${BASE}/shelves/${shelfId}/feed`);
+}
+
+export async function readFromUrl(
+  url: string,
+  reader: string = "both",
+  shelves: string[] = []
+): Promise<{ task_id: string }> {
+  return fetchJSON(`${BASE}/read-url`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url, reader, shelves }),
+  });
 }

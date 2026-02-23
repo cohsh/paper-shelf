@@ -94,6 +94,7 @@ def update_index(
         "title": paper_data.get("title", ""),
         "authors": paper_data.get("authors", []),
         "year": paper_data.get("year", 0),
+        "published_date": paper_data.get("published_date", ""),
         "venue": paper_data.get("venue", ""),
         "read_date": paper_data.get("read_date", ""),
         "tags": paper_data.get("tags", []),

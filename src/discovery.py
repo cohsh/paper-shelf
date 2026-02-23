@@ -108,6 +108,7 @@ def _normalize_paper(work: dict) -> dict:
         "title": work.get("display_name") or work.get("title") or "",
         "authors": authors,
         "year": work.get("publication_year") or 0,
+        "published_date": work.get("publication_date") or "",
         "abstract": abstract,
         "venue": venue,
         "url": url,
@@ -121,7 +122,7 @@ def search_papers(query: str, limit: int = 10) -> list[dict]:
     url = (
         f"{OPENALEX_API}/works?search={encoded_query}"
         f"&per_page={limit}"
-        f"&select=id,display_name,publication_year,authorships,doi,ids,"
+        f"&select=id,display_name,publication_year,publication_date,authorships,doi,ids,"
         f"primary_location,abstract_inverted_index,open_access"
     )
     logger.info("Searching OpenAlex: %s", query)
@@ -171,7 +172,7 @@ def get_recommendations(paper_title: str, limit: int = 10) -> list[dict]:
     details_url = (
         f"{OPENALEX_API}/works?filter=openalex:{ids_filter}"
         f"&per_page={fetch_count}"
-        f"&select=id,display_name,publication_year,authorships,doi,ids,"
+        f"&select=id,display_name,publication_year,publication_date,authorships,doi,ids,"
         f"primary_location,abstract_inverted_index,open_access"
     )
     logger.info("Fetching %d related works", len(batch_ids))

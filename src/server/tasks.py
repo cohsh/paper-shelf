@@ -237,17 +237,24 @@ def run_library_discovery_pipeline(
     task_id: str,
     task_manager: TaskManager,
     output_dir: str,
+    shelf_id: str | None = None,
 ) -> None:
-    """Run library-wide paper discovery in a background thread."""
+    """Run paper discovery in a background thread.
+
+    When *shelf_id* is provided, only papers on that shelf are used as
+    context and results are saved per-shelf.  Otherwise, the entire
+    library is used.
+    """
     import json
 
     from src import discovery, library
 
     try:
+        label = "shelf" if shelf_id else "library"
         task_manager.update(
             task_id,
             status="discovering",
-            progress_message="Analyzing library and searching for papers...",
+            progress_message=f"Analyzing {label} and searching for papers...",
         )
 
         def _on_progress(msg: str) -> None:
@@ -255,8 +262,11 @@ def run_library_discovery_pipeline(
 
         discovery.set_progress_callback(_on_progress)
 
-        index = library.load_index(output_dir)
-        papers = index.get("papers", [])
+        if shelf_id:
+            papers = library.list_papers_by_shelf(shelf_id, output_dir)
+        else:
+            index = library.load_index(output_dir)
+            papers = index.get("papers", [])
         existing_titles = {p.get("title", "").lower() for p in papers}
 
         results = discovery.discover_for_library(
@@ -268,15 +278,18 @@ def run_library_discovery_pipeline(
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        # Save to library/discovery.json
-        discovery_path = os.path.join(output_dir, "discovery.json")
+        # Save per-shelf or library-wide
+        if shelf_id:
+            discovery_path = os.path.join(output_dir, f"discovery_{shelf_id}.json")
+        else:
+            discovery_path = os.path.join(output_dir, "discovery.json")
         with open(discovery_path, "w", encoding="utf-8") as f:
             json.dump(result_data, f, ensure_ascii=False, indent=2)
 
         task_manager.update(
             task_id,
             status="completed",
-            progress_message="Library discovery complete!",
+            progress_message="Discovery complete!",
             completed_at=datetime.now(timezone.utc).isoformat(),
         )
     except Exception as e:
@@ -290,3 +303,96 @@ def run_library_discovery_pipeline(
         )
     finally:
         discovery.set_progress_callback(None)
+
+
+def run_feed_pipeline(
+    task_id: str,
+    task_manager: TaskManager,
+    shelf_id: str,
+    output_dir: str,
+) -> None:
+    """Run daily feed generation for a shelf in a background thread."""
+    from src import daily_feed
+
+    try:
+        task_manager.update(
+            task_id,
+            status="discovering",
+            progress_message="Generating feed for shelf...",
+        )
+
+        def _on_progress(msg: str) -> None:
+            task_manager.update(task_id, progress_message=msg)
+
+        daily_feed.set_progress_callback(_on_progress)
+
+        result = daily_feed.fetch_feed(shelf_id, output_dir)
+
+        task_manager.update(
+            task_id,
+            status="completed",
+            progress_message=f"Feed complete! Found {len(result.get('papers', []))} papers.",
+            completed_at=datetime.now(timezone.utc).isoformat(),
+        )
+    except Exception as e:
+        logger.error("Feed pipeline failed: %s", e, exc_info=True)
+        task_manager.update(
+            task_id,
+            status="failed",
+            progress_message=str(e),
+            error=str(e),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+        )
+    finally:
+        daily_feed.set_progress_callback(None)
+
+
+def run_url_reading_pipeline(
+    task_id: str,
+    task_manager: TaskManager,
+    url: str,
+    reader_choice: str,
+    output_dir: str,
+    shelves: list[str] | None = None,
+) -> None:
+    """Download PDF from URL and run through reading pipeline."""
+    import tempfile
+    import urllib.error
+    import urllib.request
+
+    temp_path = ""
+    try:
+        task_manager.update(
+            task_id,
+            status="downloading",
+            progress_message="Downloading PDF...",
+        )
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".pdf", prefix="feed_dl_", delete=False
+        ) as tmp:
+            temp_path = tmp.name
+            req = urllib.request.Request(url)
+            req.add_header("User-Agent", "PaperShelf/1.0")
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                tmp.write(resp.read())
+
+        # Delegate to existing reading pipeline (same thread).
+        # run_reading_pipeline handles its own status updates and
+        # cleans up the temp file in its finally block.
+        run_reading_pipeline(
+            task_id, task_manager, temp_path, reader_choice, output_dir,
+            shelves=shelves,
+        )
+    except Exception as e:
+        logger.error("URL reading pipeline failed: %s", e, exc_info=True)
+        task_manager.update(
+            task_id,
+            status="failed",
+            progress_message=str(e),
+            error=str(e),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+        )
+        # Clean up temp file on download error
+        if temp_path and os.path.exists(temp_path):
+            os.unlink(temp_path)

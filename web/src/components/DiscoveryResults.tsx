@@ -42,7 +42,7 @@ export default function DiscoveryResults({ discovery }: Props) {
                 {paper.authors.length > 0 && (
                   <span>{paper.authors.slice(0, 3).join(", ")}{paper.authors.length > 3 ? " et al." : ""}</span>
                 )}
-                {paper.year > 0 && <span>{paper.year}</span>}
+                {(paper.published_date || paper.year > 0) && <span>{paper.published_date || paper.year}</span>}
                 {paper.venue && <span className="discovery-venue">{paper.venue}</span>}
                 {extLink && (
                   <a

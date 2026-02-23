@@ -4,6 +4,7 @@
         "title": {"type": "string"},
         "authors": {"type": "array", "items": {"type": "string"}},
         "year": {"type": "integer"},
+        "published_date": {"type": "string"},
         "venue": {"type": "string"},
         "abstract_summary": {"type": "string"},
         "abstract_summary_ja": {"type": "string"},
@@ -21,7 +22,7 @@
         "confidence_notes": {"type": "string"}
     },
     "required": [
-        "title", "authors", "year", "venue",
+        "title", "authors", "year", "published_date", "venue",
         "abstract_summary", "abstract_summary_ja",
         "key_contributions", "key_contributions_ja",
         "methodology", "methodology_ja",

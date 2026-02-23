@@ -239,7 +239,7 @@ export default function PaperDetailPage() {
         <h1>{paper.title}</h1>
         <div className="paper-meta">
           <span>{authors}</span>
-          <span>{paper.year || "?"}</span>
+          <span>{paper.published_date || paper.year || "?"}</span>
           {paper.venue && <span>{paper.venue}</span>}
           <span>{paper.page_count} pages</span>
           <span>Read: {paper.read_date}</span>

@@ -123,10 +123,11 @@ def _build_json_record(
     """Build structured JSON record for storage."""
     title = _get_title(results, metadata)
 
-    # Get authors, year, venue from first available reader
+    # Get authors, year, venue, published_date from first available reader
     authors = []
     year = 0
     venue = ""
+    published_date = ""
     tags = []
     for reader_name in ("claude", "codex"):
         if reader_name in results:
@@ -137,6 +138,8 @@ def _build_json_record(
                 year = r["year"]
             if not venue and r.get("venue"):
                 venue = r["venue"]
+            if not published_date and r.get("published_date"):
+                published_date = r["published_date"]
             if not tags and r.get("tags"):
                 tags = r["tags"]
 
@@ -145,6 +148,7 @@ def _build_json_record(
         "title": title,
         "authors": authors,
         "year": year,
+        "published_date": published_date,
         "venue": venue,
         "read_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "source_file": source_path,
@@ -163,7 +167,10 @@ def _render_markdown(record: dict) -> str:
 
     authors_str = ", ".join(record["authors"]) if record["authors"] else "Unknown"
     lines.append(f"**Authors:** {authors_str}  ")
-    lines.append(f"**Year:** {record['year'] or 'Unknown'}  ")
+    if record.get("published_date"):
+        lines.append(f"**Published:** {record['published_date']}  ")
+    else:
+        lines.append(f"**Year:** {record['year'] or 'Unknown'}  ")
     if record.get("venue"):
         lines.append(f"**Venue:** {record['venue']}  ")
     lines.append(f"**Read on:** {record['read_date']}  ")

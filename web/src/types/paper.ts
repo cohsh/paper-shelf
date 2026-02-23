@@ -12,6 +12,7 @@ export interface PaperSummary {
   title: string;
   authors: string[];
   year: number;
+  published_date?: string;
   venue?: string;
   read_date: string;
   tags: string[];
@@ -23,6 +24,7 @@ export interface ReadingResult {
   title: string;
   authors: string[];
   year: number;
+  published_date?: string;
   venue?: string;
   abstract_summary: string;
   abstract_summary_ja?: string;
@@ -66,6 +68,7 @@ export interface DiscoveredPaper {
   title: string;
   authors: string[];
   year: number;
+  published_date?: string;
   abstract: string;
   venue: string;
   url: string;
@@ -82,6 +85,7 @@ export interface PaperDetail {
   title: string;
   authors: string[];
   year: number;
+  published_date?: string;
   venue?: string;
   read_date: string;
   source_file: string;
@@ -97,6 +101,26 @@ export interface PaperDetail {
   discovered?: DiscoveryResult;
 }
 
+export interface FeedPaper {
+  title: string;
+  authors: string[];
+  year: number;
+  abstract: string;
+  venue: string;
+  url: string;
+  external_ids: Record<string, string>;
+  arxiv_id?: string;
+  published?: string;
+}
+
+export interface FeedResult {
+  shelf_id: string;
+  papers: FeedPaper[];
+  queries: { categories: string[]; keywords: string[] };
+  generated_at: string;
+  source_counts: { arxiv: number; openalex: number; merged: number };
+}
+
 export type TaskStatusValue =
   | "pending"
   | "extracting"
@@ -105,6 +129,7 @@ export type TaskStatusValue =
   | "saving"
   | "analyzing"
   | "discovering"
+  | "downloading"
   | "completed"
   | "failed";
 

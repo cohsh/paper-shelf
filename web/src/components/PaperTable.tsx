@@ -31,7 +31,7 @@ export default function PaperTable({ papers, sortBy, sortOrder, onSort }: Props)
             Authors {renderSortIndicator("authors")}
           </th>
           <th className="sortable" onClick={() => onSort("year")}>
-            Year {renderSortIndicator("year")}
+            Published {renderSortIndicator("year")}
           </th>
           <th>Tags</th>
           <th className="sortable" onClick={() => onSort("read_date")}>
@@ -52,7 +52,7 @@ export default function PaperTable({ papers, sortBy, sortOrder, onSort }: Props)
                 </div>
               )}
             </td>
-            <td>{p.year || "-"}</td>
+            <td>{p.published_date || p.year || "-"}</td>
             <td>
               <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                 {p.tags.slice(0, 3).map((t) => (
