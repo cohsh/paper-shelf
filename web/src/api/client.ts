@@ -1,6 +1,7 @@
 import type {
   ChatMessage,
   CritiqueResult,
+  DiscoveryResult,
   PaperDetail,
   PaperListResponse,
   Shelf,
@@ -123,4 +124,28 @@ export async function sendChatMessage(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message, history }),
   });
+}
+
+// --- Discovery API ---
+
+export async function discoverRelated(
+  paperId: string
+): Promise<{ task_id: string }> {
+  return fetchJSON(`${BASE}/papers/${paperId}/discover`, {
+    method: "POST",
+  });
+}
+
+export async function getDiscovered(
+  paperId: string
+): Promise<DiscoveryResult> {
+  return fetchJSON(`${BASE}/papers/${paperId}/discover`);
+}
+
+export async function discoverForLibrary(): Promise<{ task_id: string }> {
+  return fetchJSON(`${BASE}/discover`, { method: "POST" });
+}
+
+export async function getLibraryDiscovery(): Promise<DiscoveryResult> {
+  return fetchJSON(`${BASE}/discover`);
 }

@@ -13,26 +13,28 @@ Please analyze this paper and provide the following information as JSON. Every t
 
 3. "year": The publication year (integer). If not explicitly stated, estimate from context clues.
 
-4. "abstract_summary": A 2-4 sentence summary of the paper's core thesis in English.
+4. "venue": The publication venue — journal name, conference name, or preprint server (e.g., "Physical Review Letters", "NeurIPS 2017", "arXiv"). Use an empty string "" if not identifiable.
+
+5. "abstract_summary": A 2-4 sentence summary of the paper's core thesis in English.
    "abstract_summary_ja": Same summary in Japanese (日本語). Same level of detail.
 
-5. "key_contributions": A list of 3-7 specific contributions or novel findings in English.
+6. "key_contributions": A list of 3-7 specific contributions or novel findings in English.
    "key_contributions_ja": Same list in Japanese (日本語). Same number of items.
 
-6. "methodology": A 2-5 sentence description of the research methodology in English.
+7. "methodology": A 2-5 sentence description of the research methodology in English.
    "methodology_ja": Same description in Japanese (日本語). Same level of detail.
 
-7. "main_results": A 2-5 sentence summary of the primary results in English.
+8. "main_results": A 2-5 sentence summary of the primary results in English.
    "main_results_ja": Same summary in Japanese (日本語). Same level of detail.
 
-8. "limitations": A list of 2-5 limitations or open questions in English.
+9. "limitations": A list of 2-5 limitations or open questions in English.
    "limitations_ja": Same list in Japanese (日本語). Same number of items.
 
-9. "connections": How this work relates to the broader field in English. Mention 2-4 related papers.
-   "connections_ja": Same content in Japanese (日本語). Same level of detail.
+10. "connections": How this work relates to the broader field in English. Mention 2-4 related papers.
+    "connections_ja": Same content in Japanese (日本語). Same level of detail.
 
-10. "tags": A list of 3-8 short keyword tags for categorizing this paper (e.g., "deep-learning", "computer-vision").
+11. "tags": A list of 3-8 short keyword tags for categorizing this paper (e.g., "deep-learning", "computer-vision").
 
-11. "confidence_notes": Briefly note any sections where text extraction may have been poor or your analysis may be uncertain.
+12. "confidence_notes": Briefly note any sections where text extraction may have been poor or your analysis may be uncertain.
 
 Respond ONLY with valid JSON matching the required schema. Do not include any preamble or conversational text.

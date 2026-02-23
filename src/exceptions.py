@@ -20,3 +20,7 @@ class CodexReaderError(ReaderError):
 
 class StorageError(PaperReaderError):
     """Error during result storage."""
+
+
+class DiscoveryError(PaperReaderError):
+    """Error during paper discovery."""

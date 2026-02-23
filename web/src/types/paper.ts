@@ -12,6 +12,7 @@ export interface PaperSummary {
   title: string;
   authors: string[];
   year: number;
+  venue?: string;
   read_date: string;
   tags: string[];
   readers_used: string[];
@@ -22,6 +23,7 @@ export interface ReadingResult {
   title: string;
   authors: string[];
   year: number;
+  venue?: string;
   abstract_summary: string;
   abstract_summary_ja?: string;
   key_contributions: string[];
@@ -60,11 +62,27 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface DiscoveredPaper {
+  title: string;
+  authors: string[];
+  year: number;
+  abstract: string;
+  venue: string;
+  url: string;
+  external_ids: Record<string, string>;
+}
+
+export interface DiscoveryResult {
+  papers: DiscoveredPaper[];
+  generated_at: string;
+}
+
 export interface PaperDetail {
   paper_id: string;
   title: string;
   authors: string[];
   year: number;
+  venue?: string;
   read_date: string;
   source_file: string;
   page_count: number;
@@ -76,6 +94,7 @@ export interface PaperDetail {
     codex?: ReadingResult;
   };
   critique?: CritiqueResult;
+  discovered?: DiscoveryResult;
 }
 
 export type TaskStatusValue =
@@ -85,6 +104,7 @@ export type TaskStatusValue =
   | "reading_codex"
   | "saving"
   | "analyzing"
+  | "discovering"
   | "completed"
   | "failed";
 

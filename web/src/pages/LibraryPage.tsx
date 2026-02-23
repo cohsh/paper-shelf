@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { getPapers } from "../api/client";
-import type { PaperSummary } from "../types/paper";
+import { getPapers, discoverForLibrary, getLibraryDiscovery, getTask } from "../api/client";
+import type { DiscoveryResult, PaperSummary, TaskStatusValue } from "../types/paper";
 import PaperTable from "../components/PaperTable";
 import type { SortKey, SortOrder } from "../components/PaperTable";
 import PaperCard from "../components/PaperCard";
 import ShelfSidebar from "../components/ShelfSidebar";
+import DiscoveryResults from "../components/DiscoveryResults";
 
 type ViewMode = "table" | "cards";
 
@@ -21,6 +22,14 @@ export default function LibraryPage() {
   const [loading, setLoading] = useState(true);
   const [activeShelfId, setActiveShelfId] = useState<string | null>(null);
 
+  const [discoveryResult, setDiscoveryResult] = useState<DiscoveryResult | null>(null);
+  const [discoveryOpen, setDiscoveryOpen] = useState(false);
+  const [discoveryTaskId, setDiscoveryTaskId] = useState<string | null>(null);
+  const [discoveryStatus, setDiscoveryStatus] = useState<TaskStatusValue>("pending");
+  const [discoveryMessage, setDiscoveryMessage] = useState("");
+  const [discoveryRunning, setDiscoveryRunning] = useState(false);
+  const discoveryPollingRef = useRef<number | null>(null);
+
   useEffect(() => {
     setLoading(true);
     getPapers({
@@ -34,6 +43,60 @@ export default function LibraryPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [searchQuery, activeShelfId]);
+
+  // Load existing library discovery results on mount
+  useEffect(() => {
+    getLibraryDiscovery()
+      .then((res) => setDiscoveryResult(res))
+      .catch(() => {});
+  }, []);
+
+  const handleLibraryDiscover = useCallback(async () => {
+    setDiscoveryRunning(true);
+    setDiscoveryOpen(true);
+    try {
+      const res = await discoverForLibrary();
+      setDiscoveryTaskId(res.task_id);
+      setDiscoveryStatus("pending");
+      setDiscoveryMessage("Queued...");
+    } catch (e) {
+      setDiscoveryMessage(`Failed: ${e}`);
+      setDiscoveryRunning(false);
+    }
+  }, []);
+
+  // Poll library discovery task status
+  useEffect(() => {
+    if (!discoveryTaskId || discoveryStatus === "completed" || discoveryStatus === "failed") return;
+
+    const poll = async () => {
+      try {
+        const task = await getTask(discoveryTaskId);
+        setDiscoveryStatus(task.status);
+        setDiscoveryMessage(task.progress_message);
+        if (task.status === "completed") {
+          getLibraryDiscovery()
+            .then((res) => {
+              setDiscoveryResult(res);
+              setDiscoveryRunning(false);
+            })
+            .catch(() => setDiscoveryRunning(false));
+        }
+        if (task.status === "failed") {
+          setDiscoveryRunning(false);
+        }
+      } catch {
+        // Ignore transient errors
+      }
+    };
+
+    discoveryPollingRef.current = window.setInterval(poll, 2000);
+    poll();
+
+    return () => {
+      if (discoveryPollingRef.current) clearInterval(discoveryPollingRef.current);
+    };
+  }, [discoveryTaskId, discoveryStatus]);
 
   const handleSort = (key: SortKey) => {
     if (sortBy === key) {
@@ -116,6 +179,14 @@ export default function LibraryPage() {
             </button>
           </div>
 
+          <button
+            className="btn"
+            onClick={handleLibraryDiscover}
+            disabled={discoveryRunning || total === 0}
+          >
+            {discoveryRunning ? "Discovering..." : "Discover"}
+          </button>
+
           <span className="total">{total} paper(s)</span>
         </div>
 
@@ -136,6 +207,51 @@ export default function LibraryPage() {
             {sortedPapers.map((p) => (
               <PaperCard key={p.paper_id} paper={p} />
             ))}
+          </div>
+        )}
+
+        {(discoveryOpen || discoveryResult) && (
+          <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
+            <div
+              className="collapsible-header"
+              onClick={() => setDiscoveryOpen(!discoveryOpen)}
+            >
+              <div className="reading-section-header" style={{ flex: 1 }}>
+                <h2 style={{ cursor: "pointer" }}>
+                  <span className={`critique-chevron ${discoveryOpen ? "open" : ""}`}>&#9654;</span>
+                  Suggested Papers
+                </h2>
+                {discoveryResult && (
+                  <button
+                    className="btn btn-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLibraryDiscover();
+                    }}
+                    disabled={discoveryRunning}
+                    style={{ marginLeft: 8 }}
+                  >
+                    {discoveryRunning ? "Searching..." : "Refresh"}
+                  </button>
+                )}
+              </div>
+            </div>
+            {discoveryOpen && (
+              <div className="collapsible-body">
+                {discoveryRunning && !discoveryResult ? (
+                  <div className="progress-steps">
+                    <div className={`progress-step ${discoveryStatus === "failed" ? "failed" : "active"}`}>
+                      <div className={`step-icon ${discoveryStatus === "failed" ? "failed" : "active"}`}>
+                        {discoveryStatus === "failed" ? "\u2717" : "1"}
+                      </div>
+                      <span>{discoveryMessage || "Analyzing library and searching for papers..."}</span>
+                    </div>
+                  </div>
+                ) : discoveryResult ? (
+                  <DiscoveryResults discovery={discoveryResult} />
+                ) : null}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -46,6 +46,11 @@ export default function PaperTable({ papers, sortBy, sortOrder, onSort }: Props)
             <td style={{ fontWeight: 500 }}>{p.title}</td>
             <td style={{ color: "var(--color-text-secondary)", fontSize: 13 }}>
               {formatAuthors(p.authors)}
+              {p.venue && (
+                <div style={{ fontSize: 12, fontStyle: "italic", marginTop: 2 }}>
+                  {p.venue}
+                </div>
+              )}
             </td>
             <td>{p.year || "-"}</td>
             <td>

@@ -18,8 +18,9 @@ export default function PaperCard({ paper }: Props) {
     <div className="card" onClick={() => navigate(`/papers/${paper.paper_id}`)}>
       <div className="paper-card-title">{paper.title}</div>
       <div className="paper-card-meta">
-        {authors} &middot; {paper.year || "?"} &middot; {paper.read_date}
-        &middot; {paper.readers_used.join(", ")}
+        {authors} &middot; {paper.year || "?"}
+        {paper.venue && <> &middot; <em>{paper.venue}</em></>}
+        &middot; {paper.read_date} &middot; {paper.readers_used.join(", ")}
       </div>
       <div className="paper-card-tags">
         {paper.tags.slice(0, 5).map((t) => (

@@ -1,11 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getPaper, deletePaper, getShelves, setPaperShelves, generateCritique, getTask } from "../api/client";
-import type { CritiqueResult, PaperDetail, Shelf, TaskStatusValue } from "../types/paper";
+import { getPaper, deletePaper, getShelves, setPaperShelves, generateCritique, discoverRelated, getTask } from "../api/client";
+import type { CritiqueResult, DiscoveryResult, PaperDetail, Shelf, TaskStatusValue } from "../types/paper";
 import TagBadge from "../components/TagBadge";
 import ReaderComparison from "../components/ReaderComparison";
 import CritiqueSection from "../components/CritiqueSection";
 import CritiqueChat from "../components/CritiqueChat";
+import DiscoveryResults from "../components/DiscoveryResults";
+
+function DiscoverySection({
+  discovery,
+  onRefresh,
+  refreshing,
+}: {
+  discovery: DiscoveryResult;
+  onRefresh: () => void;
+  refreshing: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <div className="collapsible-header" onClick={() => setOpen(!open)}>
+        <div className="reading-section-header" style={{ flex: 1 }}>
+          <h2 style={{ cursor: "pointer" }}>
+            <span className={`critique-chevron ${open ? "open" : ""}`}>&#9654;</span>
+            Related Papers
+          </h2>
+          <button
+            className="btn btn-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRefresh();
+            }}
+            disabled={refreshing}
+            style={{ marginLeft: 8 }}
+          >
+            {refreshing ? "Searching..." : "Refresh"}
+          </button>
+        </div>
+      </div>
+      {open && <DiscoveryResults discovery={discovery} />}
+    </div>
+  );
+}
 
 export default function PaperDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +63,13 @@ export default function PaperDetailPage() {
   const [critiqueGenerating, setCritiqueGenerating] = useState(false);
   const critiquePollingRef = useRef<number | null>(null);
 
+  const [discovered, setDiscovered] = useState<DiscoveryResult | null>(null);
+  const [discoveryTaskId, setDiscoveryTaskId] = useState<string | null>(null);
+  const [discoveryStatus, setDiscoveryStatus] = useState<TaskStatusValue>("pending");
+  const [discoveryMessage, setDiscoveryMessage] = useState("");
+  const [discoveryRunning, setDiscoveryRunning] = useState(false);
+  const discoveryPollingRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -36,6 +80,9 @@ export default function PaperDetailPage() {
         setSelectedShelfIds(p.shelves || []);
         if (p.critique) {
           setCritique(p.critique);
+        }
+        if (p.discovered) {
+          setDiscovered(p.discovered);
         }
       })
       .catch((e) => setError(e.message))
@@ -89,6 +136,53 @@ export default function PaperDetailPage() {
       if (critiquePollingRef.current) clearInterval(critiquePollingRef.current);
     };
   }, [critiqueTaskId, critiqueStatus]);
+
+  const handleDiscover = useCallback(async () => {
+    if (!id) return;
+    setDiscoveryRunning(true);
+    try {
+      const res = await discoverRelated(id);
+      setDiscoveryTaskId(res.task_id);
+      setDiscoveryStatus("pending");
+      setDiscoveryMessage("Queued...");
+    } catch (e) {
+      setDiscoveryMessage(`Failed: ${e}`);
+      setDiscoveryRunning(false);
+    }
+  }, [id]);
+
+  // Poll discovery task status
+  useEffect(() => {
+    if (!discoveryTaskId || discoveryStatus === "completed" || discoveryStatus === "failed") return;
+
+    const poll = async () => {
+      try {
+        const task = await getTask(discoveryTaskId);
+        setDiscoveryStatus(task.status);
+        setDiscoveryMessage(task.progress_message);
+        if (task.status === "completed" && task.paper_id) {
+          getPaper(task.paper_id).then((p) => {
+            if (p.discovered) {
+              setDiscovered(p.discovered);
+            }
+            setDiscoveryRunning(false);
+          });
+        }
+        if (task.status === "failed") {
+          setDiscoveryRunning(false);
+        }
+      } catch {
+        // Ignore transient errors
+      }
+    };
+
+    discoveryPollingRef.current = window.setInterval(poll, 2000);
+    poll();
+
+    return () => {
+      if (discoveryPollingRef.current) clearInterval(discoveryPollingRef.current);
+    };
+  }, [discoveryTaskId, discoveryStatus]);
 
   const handleDelete = async () => {
     if (!id || !confirm("Are you sure you want to delete this paper?")) return;
@@ -146,6 +240,7 @@ export default function PaperDetailPage() {
         <div className="paper-meta">
           <span>{authors}</span>
           <span>{paper.year || "?"}</span>
+          {paper.venue && <span>{paper.venue}</span>}
           <span>{paper.page_count} pages</span>
           <span>Read: {paper.read_date}</span>
           <span>Readers: {paper.readers_used.join(", ")}</span>
@@ -241,6 +336,33 @@ export default function PaperDetailPage() {
             onClick={handleGenerateCritique}
           >
             Generate Critique
+          </button>
+        )}
+      </div>
+
+      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
+        {discovered ? (
+          <DiscoverySection discovery={discovered} onRefresh={handleDiscover} refreshing={discoveryRunning} />
+        ) : discoveryRunning ? (
+          <div>
+            <h2 style={{ marginBottom: 16 }}>
+              Related Papers
+            </h2>
+            <div className="progress-steps">
+              <div className={`progress-step ${discoveryStatus === "completed" ? "completed" : discoveryStatus === "failed" ? "failed" : "active"}`}>
+                <div className={`step-icon ${discoveryStatus === "completed" ? "completed" : discoveryStatus === "failed" ? "failed" : "active"}`}>
+                  {discoveryStatus === "completed" ? "\u2713" : discoveryStatus === "failed" ? "\u2717" : "1"}
+                </div>
+                <span>{discoveryMessage || "Finding related papers..."}</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="btn btn-primary"
+            onClick={handleDiscover}
+          >
+            Find Related Papers
           </button>
         )}
       </div>
