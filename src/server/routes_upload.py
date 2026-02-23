@@ -6,7 +6,7 @@ import tempfile
 import threading
 from dataclasses import asdict
 
-from fastapi import APIRouter, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Form, HTTPException, Request, UploadFile
 
 from src.server.tasks import TaskManager, run_reading_pipeline
 
@@ -17,8 +17,8 @@ router = APIRouter()
 async def upload_paper(
     request: Request,
     file: UploadFile,
-    reader: str = "both",
-    shelves: str = "",
+    reader: str = Form("both"),
+    shelves: str = Form(""),
 ) -> dict:
     if reader not in ("claude", "codex", "both"):
         raise HTTPException(status_code=400, detail="reader must be claude, codex, or both")
