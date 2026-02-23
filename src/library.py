@@ -123,6 +123,37 @@ def get_paper(paper_id: str, output_dir: str) -> dict:
         return json.load(f)
 
 
+def save_paper(paper_id: str, data: dict, output_dir: str) -> None:
+    """Save updated paper JSON record."""
+    json_path = os.path.join(output_dir, "json", f"{paper_id}.json")
+    if not os.path.exists(json_path):
+        raise StorageError(f"Paper not found: {paper_id}")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def get_paper_text(paper_id: str, output_dir: str) -> str:
+    """Get extracted text for a paper.
+
+    Reads from cached text file if available, otherwise falls back to
+    re-extracting from the stored PDF.
+    """
+    # Try cached text first
+    text_path = os.path.join(output_dir, "texts", f"{paper_id}.txt")
+    if os.path.exists(text_path):
+        with open(text_path, encoding="utf-8") as f:
+            return f.read()
+
+    # Fallback: extract from PDF
+    from src import pdf_extractor
+
+    pdf_path = os.path.join(output_dir, "pdfs", f"{paper_id}.pdf")
+    if not os.path.exists(pdf_path):
+        raise StorageError(f"PDF not found: {paper_id}")
+    paper = pdf_extractor.extract(pdf_path)
+    return paper.text
+
+
 # ---------------------------------------------------------------------------
 # Search & listing
 # ---------------------------------------------------------------------------

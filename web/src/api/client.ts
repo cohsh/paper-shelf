@@ -1,4 +1,6 @@
 import type {
+  ChatMessage,
+  CritiqueResult,
   PaperDetail,
   PaperListResponse,
   Shelf,
@@ -92,5 +94,33 @@ export async function setPaperShelves(
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ shelf_ids: shelfIds }),
+  });
+}
+
+// --- Critique API ---
+
+export async function generateCritique(
+  paperId: string
+): Promise<{ task_id: string }> {
+  return fetchJSON(`${BASE}/papers/${paperId}/critique`, {
+    method: "POST",
+  });
+}
+
+export async function getCritique(
+  paperId: string
+): Promise<CritiqueResult> {
+  return fetchJSON(`${BASE}/papers/${paperId}/critique`);
+}
+
+export async function sendChatMessage(
+  paperId: string,
+  message: string,
+  history: ChatMessage[]
+): Promise<{ reply: string }> {
+  return fetchJSON(`${BASE}/papers/${paperId}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, history }),
   });
 }

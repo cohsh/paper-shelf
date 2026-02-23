@@ -19,6 +19,7 @@ def save(
     output_dir: str,
     source_path: str = "",
     page_count: int = 0,
+    paper_text: str = "",
 ) -> str:
     """Save reading results to markdown and JSON files. Returns paper_id."""
     # Determine title from results or metadata
@@ -64,6 +65,17 @@ def save(
                 json.dump(record, f, ensure_ascii=False, indent=2)
         except OSError as e:
             logger.warning("Failed to save source PDF: %s", e)
+
+    # Save extracted paper text for later use (e.g. critique)
+    if paper_text:
+        text_dir = os.path.join(output_dir, "texts")
+        os.makedirs(text_dir, exist_ok=True)
+        text_path = os.path.join(text_dir, f"{paper_id}.txt")
+        try:
+            with open(text_path, "w", encoding="utf-8") as f:
+                f.write(paper_text)
+        except OSError as e:
+            logger.warning("Failed to save paper text: %s", e)
 
     return paper_id
 

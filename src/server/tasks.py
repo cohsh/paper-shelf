@@ -101,7 +101,8 @@ def run_reading_pipeline(
             task_id, status="saving", progress_message="Saving results..."
         )
         paper_id = storage.save(
-            results, paper.metadata, output_dir, paper.source_path, paper.page_count
+            results, paper.metadata, output_dir, paper.source_path, paper.page_count,
+            paper_text=paper.text,
         )
         library.update_index(paper_id, output_dir, shelves=shelves)
 
@@ -124,3 +125,50 @@ def run_reading_pipeline(
     finally:
         if os.path.exists(pdf_path):
             os.unlink(pdf_path)
+
+
+def run_critique_pipeline(
+    task_id: str,
+    task_manager: TaskManager,
+    paper_id: str,
+    output_dir: str,
+) -> None:
+    """Run the critique generation pipeline in a background thread."""
+    from src import critique as critique_mod
+    from src import library
+
+    try:
+        task_manager.update(
+            task_id,
+            status="analyzing",
+            progress_message="Generating critical analysis...",
+            paper_id=paper_id,
+        )
+
+        paper = library.get_paper(paper_id, output_dir)
+        paper_text = library.get_paper_text(paper_id, output_dir)
+        readings = paper.get("readings", {})
+
+        result = critique_mod.generate_critique(paper_text, readings)
+        result["generated_at"] = datetime.now(timezone.utc).isoformat()
+
+        # Save critique to paper JSON
+        paper["critique"] = result
+        library.save_paper(paper_id, paper, output_dir)
+
+        task_manager.update(
+            task_id,
+            status="completed",
+            progress_message="Critique complete!",
+            paper_id=paper_id,
+            completed_at=datetime.now(timezone.utc).isoformat(),
+        )
+    except Exception as e:
+        logger.error("Critique pipeline failed: %s", e, exc_info=True)
+        task_manager.update(
+            task_id,
+            status="failed",
+            progress_message=str(e),
+            error=str(e),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+        )

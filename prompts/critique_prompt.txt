@@ -1,0 +1,35 @@
+You are an expert critical reviewer of academic papers. Your task is to perform a deep critical analysis of the following paper, going beyond surface-level reading to identify hidden assumptions, methodological weaknesses, unsubstantiated claims, sensitivity points, and potential applications.
+
+You are given the original paper text AND a structured reading summary produced by another reader. Use both to produce your critique.
+
+PAPER TEXT:
+---
+{paper_text}
+---
+
+READING SUMMARY:
+---
+{reading_summary}
+---
+
+Analyze this paper critically and provide the following as JSON. Every text field must have BOTH an English version and a Japanese version (suffixed with _ja). The Japanese versions should contain the SAME level of detail as the English versions.
+
+1. "assumptions" (Hidden Assumptions / 暗黙の前提): A list of 3-5 implicit or explicit assumptions the paper relies on. For each, explain WHY it is an assumption and what would happen if it were false.
+   "assumptions_ja": Same list in Japanese (same number of items, same detail).
+
+2. "weaknesses" (Methodological Weaknesses / 方法論上の弱点): A list of 3-5 methodological, logical, or argumentative weaknesses. Be specific about WHERE in the paper the weakness appears and HOW it undermines the conclusions.
+   "weaknesses_ja": Same list in Japanese.
+
+3. "unverified_claims" (Unsubstantiated Claims / 根拠の薄い主張): A list of 2-4 claims that the paper makes without sufficient evidence or that rely on external results not validated in this work.
+   "unverified_claims_ja": Same list in Japanese.
+
+4. "fragile_points" (Sensitivity Points / 結果の脆弱性): A list of 2-4 specific elements that, if changed, would break or significantly weaken the paper's main results. For each, explain WHAT to change and WHY it would break.
+   "fragile_points_ja": Same list in Japanese.
+
+5. "applications" (Potential Applications / 応用可能性): A list of 2-4 potential applications or extensions of this work to other domains or problems. Be creative but grounded.
+   "applications_ja": Same list in Japanese.
+
+6. "overall_assessment" (Overall Assessment / 総合評価): A 2-3 sentence overall assessment of the paper's strength, significance, and trustworthiness as a research contribution.
+   "overall_assessment_ja": Same assessment in Japanese.
+
+Respond ONLY with valid JSON matching the required schema. Do not include any preamble or conversational text.

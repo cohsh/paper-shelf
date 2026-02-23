@@ -39,6 +39,27 @@ export interface ReadingResult {
   summary_ja?: string;
 }
 
+export interface CritiqueResult {
+  assumptions: string[];
+  assumptions_ja?: string[];
+  weaknesses: string[];
+  weaknesses_ja?: string[];
+  unverified_claims: string[];
+  unverified_claims_ja?: string[];
+  fragile_points: string[];
+  fragile_points_ja?: string[];
+  applications: string[];
+  applications_ja?: string[];
+  overall_assessment: string;
+  overall_assessment_ja?: string;
+  generated_at: string;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface PaperDetail {
   paper_id: string;
   title: string;
@@ -54,6 +75,7 @@ export interface PaperDetail {
     claude?: ReadingResult;
     codex?: ReadingResult;
   };
+  critique?: CritiqueResult;
 }
 
 export type TaskStatusValue =
@@ -62,6 +84,7 @@ export type TaskStatusValue =
   | "reading_claude"
   | "reading_codex"
   | "saving"
+  | "analyzing"
   | "completed"
   | "failed";
 

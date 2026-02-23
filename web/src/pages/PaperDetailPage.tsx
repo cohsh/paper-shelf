@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getPaper, deletePaper, getShelves, setPaperShelves } from "../api/client";
-import type { PaperDetail, Shelf } from "../types/paper";
+import { getPaper, deletePaper, getShelves, setPaperShelves, generateCritique, getTask } from "../api/client";
+import type { CritiqueResult, PaperDetail, Shelf, TaskStatusValue } from "../types/paper";
 import TagBadge from "../components/TagBadge";
 import ReaderComparison from "../components/ReaderComparison";
+import CritiqueSection from "../components/CritiqueSection";
+import CritiqueChat from "../components/CritiqueChat";
 
 export default function PaperDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +19,13 @@ export default function PaperDetailPage() {
   const [editingShelves, setEditingShelves] = useState(false);
   const [selectedShelfIds, setSelectedShelfIds] = useState<string[]>([]);
 
+  const [critique, setCritique] = useState<CritiqueResult | null>(null);
+  const [critiqueTaskId, setCritiqueTaskId] = useState<string | null>(null);
+  const [critiqueStatus, setCritiqueStatus] = useState<TaskStatusValue>("pending");
+  const [critiqueMessage, setCritiqueMessage] = useState("");
+  const [critiqueGenerating, setCritiqueGenerating] = useState(false);
+  const critiquePollingRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -25,10 +34,61 @@ export default function PaperDetailPage() {
         setPaper(p);
         setAllShelves(s);
         setSelectedShelfIds(p.shelves || []);
+        if (p.critique) {
+          setCritique(p.critique);
+        }
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleGenerateCritique = useCallback(async () => {
+    if (!id) return;
+    setCritiqueGenerating(true);
+    try {
+      const res = await generateCritique(id);
+      setCritiqueTaskId(res.task_id);
+      setCritiqueStatus("pending");
+      setCritiqueMessage("Queued...");
+    } catch (e) {
+      setCritiqueMessage(`Failed: ${e}`);
+      setCritiqueGenerating(false);
+    }
+  }, [id]);
+
+  // Poll critique task status
+  useEffect(() => {
+    if (!critiqueTaskId || critiqueStatus === "completed" || critiqueStatus === "failed") return;
+
+    const poll = async () => {
+      try {
+        const task = await getTask(critiqueTaskId);
+        setCritiqueStatus(task.status);
+        setCritiqueMessage(task.progress_message);
+        if (task.status === "completed" && task.paper_id) {
+          // Reload paper to get critique data
+          getPaper(task.paper_id).then((p) => {
+            if (p.critique) {
+              setCritique(p.critique);
+            }
+            setCritiqueGenerating(false);
+          });
+        }
+        if (task.status === "failed") {
+          setCritiqueGenerating(false);
+        }
+      } catch {
+        // Ignore transient errors
+      }
+    };
+
+    critiquePollingRef.current = window.setInterval(poll, 2000);
+    poll();
+
+    return () => {
+      if (critiquePollingRef.current) clearInterval(critiquePollingRef.current);
+    };
+  }, [critiqueTaskId, critiqueStatus]);
 
   const handleDelete = async () => {
     if (!id || !confirm("Are you sure you want to delete this paper?")) return;
@@ -154,6 +214,36 @@ export default function PaperDetailPage() {
       </div>
 
       <ReaderComparison readings={paper.readings} />
+
+      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
+        {critique ? (
+          <>
+            <CritiqueSection critique={critique} />
+            <CritiqueChat paperId={paper.paper_id} />
+          </>
+        ) : critiqueGenerating ? (
+          <div>
+            <h2 style={{ color: "var(--color-warning)", marginBottom: 16 }}>
+              Critical Analysis
+            </h2>
+            <div className="progress-steps">
+              <div className={`progress-step ${critiqueStatus === "completed" ? "completed" : critiqueStatus === "failed" ? "failed" : "active"}`}>
+                <div className={`step-icon ${critiqueStatus === "completed" ? "completed" : critiqueStatus === "failed" ? "failed" : "active"}`}>
+                  {critiqueStatus === "completed" ? "\u2713" : critiqueStatus === "failed" ? "\u2717" : "1"}
+                </div>
+                <span>{critiqueMessage || "Generating critical analysis..."}</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="btn btn-primary"
+            onClick={handleGenerateCritique}
+          >
+            Generate Critique
+          </button>
+        )}
+      </div>
 
       <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
         <button

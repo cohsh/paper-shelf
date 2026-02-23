@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "properties": {
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 5
+    },
+    "assumptions_ja": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 5
+    },
+    "weaknesses": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 5
+    },
+    "weaknesses_ja": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3,
+      "maxItems": 5
+    },
+    "unverified_claims": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "unverified_claims_ja": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "fragile_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "fragile_points_ja": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "applications": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "applications_ja": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "overall_assessment": { "type": "string" },
+    "overall_assessment_ja": { "type": "string" }
+  },
+  "required": [
+    "assumptions", "assumptions_ja",
+    "weaknesses", "weaknesses_ja",
+    "unverified_claims", "unverified_claims_ja",
+    "fragile_points", "fragile_points_ja",
+    "applications", "applications_ja",
+    "overall_assessment", "overall_assessment_ja"
+  ],
+  "additionalProperties": false
+}
