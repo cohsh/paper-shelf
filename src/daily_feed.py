@@ -110,11 +110,6 @@ def fetch_feed(
         p for p in merged if p["title"].lower().strip() not in existing_titles
     ]
 
-    # Translate abstracts to Japanese
-    _notify("Translating abstracts...")
-    from src.translate import translate_abstracts
-    filtered = translate_abstracts(filtered[:max_results])
-
     feed_data = {
         "shelf_id": shelf_id,
         "papers": filtered[:max_results],

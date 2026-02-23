@@ -70,7 +70,6 @@ export interface DiscoveredPaper {
   year: number;
   published_date?: string;
   abstract: string;
-  abstract_ja?: string;
   venue: string;
   url: string;
   external_ids: Record<string, string>;
@@ -107,7 +106,6 @@ export interface FeedPaper {
   authors: string[];
   year: number;
   abstract: string;
-  abstract_ja?: string;
   venue: string;
   url: string;
   external_ids: Record<string, string>;
