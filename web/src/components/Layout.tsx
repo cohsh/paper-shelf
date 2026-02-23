@@ -17,6 +17,21 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="layout">
       <nav className="nav">
         <Link to="/library" className="nav-logo">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ marginRight: 6, verticalAlign: -3 }}
+          >
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            <path d="M8 7h6" />
+            <path d="M8 11h4" />
+          </svg>
           Paper Shelf
         </Link>
         <div className="nav-links">
