@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="docs/logo.svg" alt="Paper Shelf" width="300">
-</p>
+<img src="docs/logo.svg" alt="Paper Shelf" width="300">
 
 A personal academic paper library powered by LLMs. Upload PDFs and let Claude and Codex read them for you — generating structured, bilingual (English/Japanese) summaries with a web UI.
 
