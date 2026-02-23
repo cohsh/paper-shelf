@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { getPapers } from "../api/client";
 import type { PaperSummary } from "../types/paper";
 import PaperTable from "../components/PaperTable";
+import type { SortKey, SortOrder } from "../components/PaperTable";
 import PaperCard from "../components/PaperCard";
 import ShelfSidebar from "../components/ShelfSidebar";
 
@@ -14,7 +15,8 @@ export default function LibraryPage() {
 
   const [papers, setPapers] = useState<PaperSummary[]>([]);
   const [total, setTotal] = useState(0);
-  const [sortBy, setSortBy] = useState("date");
+  const [sortBy, setSortBy] = useState<SortKey>("read_date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [loading, setLoading] = useState(true);
   const [activeShelfId, setActiveShelfId] = useState<string | null>(null);
@@ -22,7 +24,6 @@ export default function LibraryPage() {
   useEffect(() => {
     setLoading(true);
     getPapers({
-      sort_by: sortBy,
       search: searchQuery || undefined,
       shelf: activeShelfId || undefined,
     })
@@ -32,7 +33,42 @@ export default function LibraryPage() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [sortBy, searchQuery, activeShelfId]);
+  }, [searchQuery, activeShelfId]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortBy === key) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(key);
+      setSortOrder(key === "title" || key === "authors" ? "asc" : "desc");
+    }
+  };
+
+  const sortedPapers = useMemo(() => {
+    const sorted = [...papers];
+    sorted.sort((a, b) => {
+      let cmp = 0;
+      switch (sortBy) {
+        case "title":
+          cmp = a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+          break;
+        case "authors": {
+          const aa = a.authors[0]?.toLowerCase() ?? "";
+          const bb = b.authors[0]?.toLowerCase() ?? "";
+          cmp = aa.localeCompare(bb);
+          break;
+        }
+        case "year":
+          cmp = (a.year || 0) - (b.year || 0);
+          break;
+        case "read_date":
+          cmp = (a.read_date || "").localeCompare(b.read_date || "");
+          break;
+      }
+      return sortOrder === "asc" ? cmp : -cmp;
+    });
+    return sorted;
+  }, [papers, sortBy, sortOrder]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -63,15 +99,6 @@ export default function LibraryPage() {
         )}
 
         <div className="controls-bar">
-          <label>
-            Sort by:{" "}
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-              <option value="date">Date</option>
-              <option value="title">Title</option>
-              <option value="year">Year</option>
-            </select>
-          </label>
-
           <div>
             <button
               className={`btn ${viewMode === "table" ? "btn-primary" : ""}`}
@@ -98,10 +125,15 @@ export default function LibraryPage() {
             <p>Try a different search query or shelf.</p>
           </div>
         ) : viewMode === "table" ? (
-          <PaperTable papers={papers} />
+          <PaperTable
+            papers={sortedPapers}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSort}
+          />
         ) : (
           <div className="card-grid">
-            {papers.map((p) => (
+            {sortedPapers.map((p) => (
               <PaperCard key={p.paper_id} paper={p} />
             ))}
           </div>

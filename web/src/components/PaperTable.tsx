@@ -2,22 +2,41 @@ import { useNavigate } from "react-router-dom";
 import type { PaperSummary } from "../types/paper";
 import TagBadge from "./TagBadge";
 
+export type SortKey = "title" | "authors" | "year" | "read_date";
+export type SortOrder = "asc" | "desc";
+
 interface Props {
   papers: PaperSummary[];
+  sortBy: SortKey;
+  sortOrder: SortOrder;
+  onSort: (key: SortKey) => void;
 }
 
-export default function PaperTable({ papers }: Props) {
+export default function PaperTable({ papers, sortBy, sortOrder, onSort }: Props) {
   const navigate = useNavigate();
+
+  const renderSortIndicator = (key: SortKey) => {
+    if (sortBy !== key) return null;
+    return <span className="sort-indicator">{sortOrder === "asc" ? "\u25B2" : "\u25BC"}</span>;
+  };
 
   return (
     <table className="paper-table">
       <thead>
         <tr>
-          <th>Title</th>
-          <th>Authors</th>
-          <th>Year</th>
+          <th className="sortable" onClick={() => onSort("title")}>
+            Title {renderSortIndicator("title")}
+          </th>
+          <th className="sortable" onClick={() => onSort("authors")}>
+            Authors {renderSortIndicator("authors")}
+          </th>
+          <th className="sortable" onClick={() => onSort("year")}>
+            Year {renderSortIndicator("year")}
+          </th>
           <th>Tags</th>
-          <th>Read Date</th>
+          <th className="sortable" onClick={() => onSort("read_date")}>
+            Read Date {renderSortIndicator("read_date")}
+          </th>
           <th>Readers</th>
         </tr>
       </thead>
