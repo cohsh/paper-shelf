@@ -204,6 +204,11 @@ def run_discovery_pipeline(
 
         results = discovery.get_recommendations(title, limit=20)
 
+        # Translate abstracts to Japanese
+        task_manager.update(task_id, progress_message="Translating abstracts...")
+        from src.translate import translate_abstracts
+        results = translate_abstracts(results)
+
         result_data = {
             "papers": results,
             "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -272,6 +277,11 @@ def run_library_discovery_pipeline(
         results = discovery.discover_for_library(
             papers, limit=20, existing_titles=existing_titles
         )
+
+        # Translate abstracts to Japanese
+        task_manager.update(task_id, progress_message="Translating abstracts...")
+        from src.translate import translate_abstracts
+        results = translate_abstracts(results)
 
         result_data = {
             "papers": results,

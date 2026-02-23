@@ -69,9 +69,14 @@ export default function DiscoveryResults({ discovery }: Props) {
               </div>
             </div>
 
-            {isExpanded && paper.abstract && (
+            {isExpanded && (paper.abstract || paper.abstract_ja) && (
               <div className="discovery-paper-abstract">
-                <p>{paper.abstract}</p>
+                {paper.abstract_ja && (
+                  <p style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>{paper.abstract_ja}</p>
+                )}
+                {paper.abstract && (
+                  <p style={{ color: "var(--color-text-secondary)", fontSize: 13 }}>{paper.abstract}</p>
+                )}
               </div>
             )}
           </div>

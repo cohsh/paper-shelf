@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 
 interface Props {
-  onFileSelected: (file: File) => void;
+  onFilesSelected: (files: File[]) => void;
   disabled?: boolean;
 }
 
-export default function UploadDropzone({ onFileSelected, disabled }: Props) {
+export default function UploadDropzone({ onFilesSelected, disabled }: Props) {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -14,12 +14,14 @@ export default function UploadDropzone({ onFileSelected, disabled }: Props) {
       e.preventDefault();
       setDragOver(false);
       if (disabled) return;
-      const file = e.dataTransfer.files[0];
-      if (file && file.name.toLowerCase().endsWith(".pdf")) {
-        onFileSelected(file);
+      const pdfs = Array.from(e.dataTransfer.files).filter((f) =>
+        f.name.toLowerCase().endsWith(".pdf")
+      );
+      if (pdfs.length > 0) {
+        onFilesSelected(pdfs);
       }
     },
-    [onFileSelected, disabled]
+    [onFilesSelected, disabled]
   );
 
   const handleClick = () => {
@@ -27,8 +29,12 @@ export default function UploadDropzone({ onFileSelected, disabled }: Props) {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) onFileSelected(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      onFilesSelected(Array.from(files));
+    }
+    // Reset so re-selecting the same files triggers onChange
+    e.target.value = "";
   };
 
   return (
@@ -43,12 +49,13 @@ export default function UploadDropzone({ onFileSelected, disabled }: Props) {
       onClick={handleClick}
       style={disabled ? { opacity: 0.5, cursor: "not-allowed" } : {}}
     >
-      <h3>Drag & drop a PDF here</h3>
-      <p>or click to browse</p>
+      <h3>Drag & drop PDFs here</h3>
+      <p>or click to browse (multiple files supported)</p>
       <input
         ref={inputRef}
         type="file"
         accept=".pdf"
+        multiple
         onChange={handleFileChange}
         style={{ display: "none" }}
       />
