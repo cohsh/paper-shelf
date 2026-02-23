@@ -276,7 +276,7 @@ export default function LibraryPage() {
                         </div>
                       </div>
                     ) : discoveryResult ? (
-                      <DiscoveryResults discovery={discoveryResult} />
+                      <DiscoveryResults discovery={discoveryResult} shelves={activeShelfId ? [activeShelfId] : []} />
                     ) : null}
                   </div>
                 )}

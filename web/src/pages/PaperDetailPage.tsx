@@ -12,10 +12,12 @@ function DiscoverySection({
   discovery,
   onRefresh,
   refreshing,
+  shelves,
 }: {
   discovery: DiscoveryResult;
   onRefresh: () => void;
   refreshing: boolean;
+  shelves?: string[];
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -39,7 +41,7 @@ function DiscoverySection({
           </button>
         </div>
       </div>
-      {open && <DiscoveryResults discovery={discovery} />}
+      {open && <DiscoveryResults discovery={discovery} shelves={shelves} />}
     </div>
   );
 }
@@ -342,7 +344,7 @@ export default function PaperDetailPage() {
 
       <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--color-border)" }}>
         {discovered ? (
-          <DiscoverySection discovery={discovered} onRefresh={handleDiscover} refreshing={discoveryRunning} />
+          <DiscoverySection discovery={discovered} onRefresh={handleDiscover} refreshing={discoveryRunning} shelves={paper.shelves} />
         ) : discoveryRunning ? (
           <div>
             <h2 style={{ marginBottom: 16 }}>

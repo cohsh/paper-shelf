@@ -85,7 +85,14 @@ def _normalize_paper(work: dict) -> dict:
     doi = work.get("doi") or ""
     if doi:
         # OpenAlex returns full URL like "https://doi.org/10.1234/..."
-        external_ids["DOI"] = doi.replace("https://doi.org/", "")
+        doi_str = doi.replace("https://doi.org/", "")
+        external_ids["DOI"] = doi_str
+        # Extract arXiv ID from DOI (e.g. "10.48550/arxiv.1706.03762")
+        doi_lower = doi_str.lower()
+        if "arxiv." in doi_lower:
+            parts = doi_lower.split("arxiv.")
+            if len(parts) > 1:
+                external_ids["ArXiv"] = parts[1]
 
     ids = work.get("ids") or {}
     if ids.get("pmid"):

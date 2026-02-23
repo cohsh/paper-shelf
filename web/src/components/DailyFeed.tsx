@@ -89,19 +89,25 @@ export default function DailyFeed({ shelfId }: Props) {
     };
   }, [feedTaskId, feedStatus, shelfId]);
 
+  const getPdfUrl = (paper: FeedPaper): string | null => {
+    const arxivId = paper.arxiv_id || paper.external_ids?.ArXiv;
+    if (arxivId) return `https://arxiv.org/pdf/${arxivId}.pdf`;
+    if (paper.url && paper.url.match(/\.pdf($|\?)/i)) return paper.url;
+    return null;
+  };
+
   // Handle "Read this paper"
   const handleRead = useCallback(
     async (paper: FeedPaper, idx: number) => {
-      const arxivId = paper.arxiv_id || paper.external_ids?.ArXiv;
-      if (!arxivId) return;
+      const pdfUrl = getPdfUrl(paper);
+      if (!pdfUrl) return;
 
-      const pdfUrl = `https://arxiv.org/pdf/${arxivId}.pdf`;
       setReadingPaperIdx(idx);
       setReadStatus("pending");
       setReadMessage("Starting...");
 
       try {
-        const res = await readFromUrl(pdfUrl, "claude", [shelfId]);
+        const res = await readFromUrl(pdfUrl, "both", [shelfId]);
         setReadTaskId(res.task_id);
       } catch (e) {
         setReadMessage(`Failed: ${e}`);
@@ -213,9 +219,7 @@ export default function DailyFeed({ shelfId }: Props) {
             const extLink = getExternalLink(paper.external_ids);
             const isExpanded = expandedIdx === i;
             const isReading = readingPaperIdx === i;
-            const hasArxivPdf = !!(
-              paper.arxiv_id || paper.external_ids?.ArXiv
-            );
+            const hasPdf = !!getPdfUrl(paper);
 
             return (
               <div key={i} className="discovery-paper">
@@ -257,7 +261,7 @@ export default function DailyFeed({ shelfId }: Props) {
                         {extLink.label}
                       </a>
                     )}
-                    {hasArxivPdf && (
+                    {hasPdf && (
                       <button
                         className="btn btn-sm btn-primary"
                         onClick={(e) => {
