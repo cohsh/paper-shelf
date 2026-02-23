@@ -54,6 +54,7 @@ def run_reading_pipeline(
     pdf_path: str,
     reader_choice: str,
     output_dir: str,
+    shelves: list[str] | None = None,
 ) -> None:
     """Run the full extract -> read -> save pipeline in a background thread."""
     from src import library, pdf_extractor, reader_claude, reader_codex, storage
@@ -102,7 +103,7 @@ def run_reading_pipeline(
         paper_id = storage.save(
             results, paper.metadata, output_dir, paper.source_path, paper.page_count
         )
-        library.update_index(paper_id, output_dir)
+        library.update_index(paper_id, output_dir, shelves=shelves)
 
         task_manager.update(
             task_id,

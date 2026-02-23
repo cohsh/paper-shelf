@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { uploadPaper, getTask } from "../api/client";
-import type { TaskStatusValue } from "../types/paper";
+import { uploadPaper, getTask, getShelves } from "../api/client";
+import type { Shelf, TaskStatusValue } from "../types/paper";
 import UploadDropzone from "../components/UploadDropzone";
 import ReadingProgress from "../components/ReadingProgress";
 
@@ -16,13 +16,22 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const pollingRef = useRef<number | null>(null);
 
+  const [allShelves, setAllShelves] = useState<Shelf[]>([]);
+  const [selectedShelves, setSelectedShelves] = useState<string[]>([]);
+
+  useEffect(() => {
+    getShelves()
+      .then((s) => setAllShelves(s.filter((sh) => !sh.is_virtual)))
+      .catch(console.error);
+  }, []);
+
   const isProcessing = taskId !== null && status !== "completed" && status !== "failed";
 
   const handleUpload = useCallback(async () => {
     if (!file) return;
     setUploading(true);
     try {
-      const res = await uploadPaper(file, reader);
+      const res = await uploadPaper(file, reader, selectedShelves);
       setTaskId(res.task_id);
       setStatus("pending");
       setMessage("Queued...");
@@ -32,7 +41,15 @@ export default function UploadPage() {
     } finally {
       setUploading(false);
     }
-  }, [file, reader]);
+  }, [file, reader, selectedShelves]);
+
+  const toggleShelf = (shelfId: string) => {
+    setSelectedShelves((prev) =>
+      prev.includes(shelfId)
+        ? prev.filter((s) => s !== shelfId)
+        : [...prev, shelfId]
+    );
+  };
 
   // Poll task status
   useEffect(() => {
@@ -88,6 +105,24 @@ export default function UploadPage() {
               </label>
             ))}
           </div>
+
+          {allShelves.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <span style={{ fontWeight: 500, fontSize: 14 }}>Shelves (optional):</span>
+              <div className="shelf-checkbox-list" style={{ marginTop: 6 }}>
+                {allShelves.map((s) => (
+                  <label key={s.shelf_id} className="shelf-checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={selectedShelves.includes(s.shelf_id)}
+                      onChange={() => toggleShelf(s.shelf_id)}
+                    />
+                    {s.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           <button
             className="btn btn-primary"

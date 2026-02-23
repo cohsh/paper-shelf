@@ -27,9 +27,11 @@ def create_app(output_dir: str = "library", dev_mode: bool = False) -> FastAPI:
 
     # Register API routes
     from src.server.routes_papers import router as papers_router
+    from src.server.routes_shelves import router as shelves_router
     from src.server.routes_upload import router as upload_router
 
     app.include_router(papers_router, prefix="/api")
+    app.include_router(shelves_router, prefix="/api")
     app.include_router(upload_router, prefix="/api")
 
     # Serve built frontend

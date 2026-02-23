@@ -17,14 +17,14 @@ def list_papers(
     sort_by: str = "date",
     search: str | None = None,
     field: str = "all",
+    shelf: str | None = None,
 ) -> dict:
     output_dir = request.app.state.output_dir
 
     if search:
-        papers = library.search(search, field=field, output_dir=output_dir)
+        papers = library.search(search, field=field, output_dir=output_dir, shelf=shelf)
     else:
-        index = library.load_index(output_dir)
-        papers = index.get("papers", [])
+        papers = library.list_papers_by_shelf(shelf, output_dir)
 
     if sort_by == "title":
         papers.sort(key=lambda p: p.get("title", "").lower())
@@ -40,9 +40,19 @@ def list_papers(
 def get_paper(paper_id: str, request: Request) -> dict:
     output_dir = request.app.state.output_dir
     try:
-        return library.get_paper(paper_id, output_dir)
+        paper = library.get_paper(paper_id, output_dir)
     except StorageError:
         raise HTTPException(status_code=404, detail=f"Paper not found: {paper_id}")
+
+    # Enrich with shelves from index
+    index = library.load_index(output_dir)
+    for entry in index["papers"]:
+        if entry["paper_id"] == paper_id:
+            paper["shelves"] = entry.get("shelves", [])
+            break
+    else:
+        paper["shelves"] = []
+    return paper
 
 
 @router.get("/papers/{paper_id}/markdown")
@@ -86,10 +96,6 @@ def delete_paper(paper_id: str, request: Request) -> dict:
     # Update index
     index = library.load_index(output_dir)
     index["papers"] = [p for p in index["papers"] if p["paper_id"] != paper_id]
-    index_path = os.path.join(output_dir, "index.json")
-    import json
-
-    with open(index_path, "w", encoding="utf-8") as f:
-        json.dump(index, f, ensure_ascii=False, indent=2)
+    library._save_index(index, output_dir)
 
     return {"ok": True}

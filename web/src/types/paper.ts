@@ -1,3 +1,12 @@
+export interface Shelf {
+  shelf_id: string;
+  name: string;
+  name_ja: string;
+  paper_count: number;
+  is_virtual: boolean;
+  created_at?: string;
+}
+
 export interface PaperSummary {
   paper_id: string;
   title: string;
@@ -6,6 +15,7 @@ export interface PaperSummary {
   read_date: string;
   tags: string[];
   readers_used: string[];
+  shelves?: string[];
 }
 
 export interface ReadingResult {
@@ -39,6 +49,7 @@ export interface PaperDetail {
   page_count: number;
   tags: string[];
   readers_used: string[];
+  shelves?: string[];
   readings: {
     claude?: ReadingResult;
     codex?: ReadingResult;

@@ -18,6 +18,7 @@ async def upload_paper(
     request: Request,
     file: UploadFile,
     reader: str = "both",
+    shelves: str = "",
 ) -> dict:
     if reader not in ("claude", "codex", "both"):
         raise HTTPException(status_code=400, detail="reader must be claude, codex, or both")
@@ -32,12 +33,17 @@ async def upload_paper(
         shutil.copyfileobj(file.file, tmp)
         temp_path = tmp.name
 
+    shelf_list = (
+        [s.strip() for s in shelves.split(",") if s.strip()] if shelves else None
+    )
+
     task_manager: TaskManager = request.app.state.task_manager
     task_id = task_manager.create_task()
 
     thread = threading.Thread(
         target=run_reading_pipeline,
         args=(task_id, task_manager, temp_path, reader, request.app.state.output_dir),
+        kwargs={"shelves": shelf_list},
         daemon=True,
     )
     thread.start()
