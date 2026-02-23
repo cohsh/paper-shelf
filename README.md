@@ -160,7 +160,7 @@ paper-shelf/
 
 ## Powered by
 
-- **[Claude Code](https://claude.com/claude-code)** (Anthropic) — Paper reading, critical analysis, chat, and search query generation, using Claude Sonnet 4
+- **[Claude Code](https://claude.com/claude-code)** (Anthropic) — Paper reading, critical analysis, chat, and search query generation
 - **[OpenAI Codex CLI](https://github.com/openai/codex)** — Optional second reader for comparison
 - **[OpenAlex](https://openalex.org/)** — Open scholarly metadata for paper discovery and related paper recommendations. OpenAlex data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
 - **[arXiv](https://arxiv.org/)** — Preprint search for Daily Feed
