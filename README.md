@@ -125,13 +125,13 @@ paper-shelf/
 
 ## Powered by
 
-- **[Claude Code](https://claude.com/claude-code)** (Anthropic) — Paper reading, critical analysis, and search query generation, using Claude claude-sonnet-4-20250514
+- **[Claude Code](https://claude.com/claude-code)** (Anthropic) — Paper reading, critical analysis, and search query generation, using Claude Sonnet 4
 - **[OpenAI Codex CLI](https://github.com/openai/codex)** — Optional second reader for comparison
 - **[OpenAlex](https://openalex.org/)** — Open scholarly metadata for paper discovery and related paper recommendations. OpenAlex data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
 
 ## Development Note
 
-This project was built entirely with [Claude Code](https://claude.com/claude-code) (Claude claude-opus-4-20250514).
+This project was built entirely with [Claude Code](https://claude.com/claude-code) (Claude Opus 4.6).
 
 ## License
 
