@@ -4,8 +4,8 @@ import json
 import os
 from datetime import datetime, timezone
 
-from src.exceptions import StorageError
-from src.storage import generate_paper_id
+from paper_shelf.exceptions import StorageError
+from paper_shelf.storage import generate_paper_id
 
 UNSORTED_SHELF_ID = "__unsorted__"
 UNSORTED_SHELF_NAME = "Unsorted"
@@ -147,7 +147,7 @@ def get_paper_text(paper_id: str, output_dir: str) -> str:
             return f.read()
 
     # Fallback: extract from PDF
-    from src import pdf_extractor
+    from paper_shelf import pdf_extractor
 
     pdf_path = os.path.join(output_dir, "pdfs", f"{paper_id}.pdf")
     if not os.path.exists(pdf_path):

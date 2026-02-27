@@ -6,8 +6,8 @@ import os
 import subprocess
 import tempfile
 
-from src.exceptions import ClaudeReaderError
-from src.pdf_extractor import ExtractedPaper
+from paper_shelf.exceptions import ClaudeReaderError
+from paper_shelf.pdf_extractor import ExtractedPaper
 
 logger = logging.getLogger(__name__)
 

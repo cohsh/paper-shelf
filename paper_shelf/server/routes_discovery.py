@@ -6,9 +6,9 @@ import threading
 
 from fastapi import APIRouter, HTTPException, Request
 
-from src import library
-from src.exceptions import StorageError
-from src.server.tasks import run_discovery_pipeline, run_library_discovery_pipeline
+from paper_shelf import library
+from paper_shelf.exceptions import StorageError
+from paper_shelf.server.tasks import run_discovery_pipeline, run_library_discovery_pipeline
 
 router = APIRouter()
 

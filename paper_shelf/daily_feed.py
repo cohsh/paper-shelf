@@ -8,8 +8,8 @@ import tempfile
 from collections.abc import Callable
 from datetime import datetime, timezone
 
-from src import arxiv_client, discovery, library
-from src.exceptions import DiscoveryError
+from paper_shelf import arxiv_client, discovery, library
+from paper_shelf.exceptions import DiscoveryError
 
 logger = logging.getLogger(__name__)
 

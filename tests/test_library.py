@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 
-from src.library import (
+from paper_shelf.library import (
     UNSORTED_SHELF_ID,
     add_paper_to_shelf,
     assign_paper_to_shelves,
@@ -20,8 +20,8 @@ from src.library import (
     search,
     update_index,
 )
-from src.exceptions import StorageError
-from src.storage import save
+from paper_shelf.exceptions import StorageError
+from paper_shelf.storage import save
 
 
 @pytest.fixture

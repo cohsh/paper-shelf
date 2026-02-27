@@ -4,8 +4,8 @@ import tempfile
 import pymupdf
 import pytest
 
-from src.exceptions import PDFExtractionError
-from src.pdf_extractor import ExtractedPaper, extract
+from paper_shelf.exceptions import PDFExtractionError
+from paper_shelf.pdf_extractor import ExtractedPaper, extract
 
 
 @pytest.fixture

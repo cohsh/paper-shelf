@@ -6,7 +6,7 @@ __pycache__/
 dist/
 *.egg-info/
 .env
-src/server/static/
+paper_shelf/server/static/
 web/node_modules/
 web/dist/
 .DS_Store

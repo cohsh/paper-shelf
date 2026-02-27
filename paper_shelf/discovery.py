@@ -10,7 +10,7 @@ import urllib.error
 import urllib.parse
 from collections.abc import Callable
 
-from src.exceptions import DiscoveryError
+from paper_shelf.exceptions import DiscoveryError
 
 logger = logging.getLogger(__name__)
 

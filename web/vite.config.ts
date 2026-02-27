@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../src/server/static",
+    outDir: "../paper_shelf/server/static",
     emptyOutDir: true,
   },
 });

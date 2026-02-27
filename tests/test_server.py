@@ -6,10 +6,10 @@ import pymupdf
 import pytest
 from fastapi.testclient import TestClient
 
-from src.server.app import create_app
-from src.server.tasks import TaskManager
-from src.storage import save
-from src.library import update_index
+from paper_shelf.server.app import create_app
+from paper_shelf.server.tasks import TaskManager
+from paper_shelf.storage import save
+from paper_shelf.library import update_index
 
 
 @pytest.fixture

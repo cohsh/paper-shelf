@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-paper-shelf = "src.main:cli"
+paper-shelf = "paper_shelf.main:cli"
 
 [project.optional-dependencies]
 dev = [
@@ -23,7 +23,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["src*"]
+include = ["paper_shelf*"]
 
 [build-system]
 requires = ["setuptools>=75.0"]

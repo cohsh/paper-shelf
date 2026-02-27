@@ -9,8 +9,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
 
-from src import library, pdf_extractor, reader_claude, reader_codex, storage
-from src.exceptions import ClaudeReaderError, CodexReaderError, PaperReaderError, StorageError
+from paper_shelf import library, pdf_extractor, reader_claude, reader_codex, storage
+from paper_shelf.exceptions import ClaudeReaderError, CodexReaderError, PaperReaderError, StorageError
 
 console = Console()
 logger = logging.getLogger("paper-shelf")
@@ -304,7 +304,7 @@ def serve(host: str, port: int, output_dir: str, dev: bool) -> None:
     """Start the web interface."""
     import uvicorn
 
-    from src.server.app import create_app
+    from paper_shelf.server.app import create_app
 
     app = create_app(output_dir=output_dir, dev_mode=dev)
     console.print("[bold]Starting Paper Shelf web UI[/bold]")

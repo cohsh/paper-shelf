@@ -7,8 +7,8 @@ import shutil
 import subprocess
 import tempfile
 
-from src.exceptions import CodexReaderError
-from src.pdf_extractor import ExtractedPaper
+from paper_shelf.exceptions import CodexReaderError
+from paper_shelf.pdf_extractor import ExtractedPaper
 
 logger = logging.getLogger(__name__)
 

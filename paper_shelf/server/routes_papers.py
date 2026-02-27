@@ -5,8 +5,8 @@ import os
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from src import library
-from src.exceptions import StorageError
+from paper_shelf import library
+from paper_shelf.exceptions import StorageError
 
 router = APIRouter()
 

@@ -6,7 +6,7 @@ import os
 import subprocess
 import tempfile
 
-from src.exceptions import ClaudeReaderError
+from paper_shelf.exceptions import ClaudeReaderError
 
 logger = logging.getLogger(__name__)
 

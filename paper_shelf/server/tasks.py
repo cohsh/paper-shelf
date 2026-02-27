@@ -57,8 +57,8 @@ def run_reading_pipeline(
     shelves: list[str] | None = None,
 ) -> None:
     """Run the full extract -> read -> save pipeline in a background thread."""
-    from src import library, pdf_extractor, reader_claude, reader_codex, storage
-    from src.exceptions import PaperReaderError
+    from paper_shelf import library, pdf_extractor, reader_claude, reader_codex, storage
+    from paper_shelf.exceptions import PaperReaderError
 
     try:
         task_manager.update(
@@ -134,8 +134,8 @@ def run_critique_pipeline(
     output_dir: str,
 ) -> None:
     """Run the critique generation pipeline in a background thread."""
-    from src import critique as critique_mod
-    from src import library
+    from paper_shelf import critique as critique_mod
+    from paper_shelf import library
 
     try:
         task_manager.update(
@@ -181,7 +181,7 @@ def run_discovery_pipeline(
     output_dir: str,
 ) -> None:
     """Run discovery of related papers in a background thread."""
-    from src import discovery, library
+    from paper_shelf import discovery, library
 
     try:
         task_manager.update(
@@ -247,7 +247,7 @@ def run_library_discovery_pipeline(
     """
     import json
 
-    from src import discovery, library
+    from paper_shelf import discovery, library
 
     try:
         label = "shelf" if shelf_id else "library"
@@ -312,7 +312,7 @@ def run_feed_pipeline(
     output_dir: str,
 ) -> None:
     """Run daily feed generation for a shelf in a background thread."""
-    from src import daily_feed
+    from paper_shelf import daily_feed
 
     try:
         task_manager.update(

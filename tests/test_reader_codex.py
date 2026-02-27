@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from src.exceptions import CodexReaderError
-from src.pdf_extractor import ExtractedPaper
-from src.reader_codex import is_available, read
+from paper_shelf.exceptions import CodexReaderError
+from paper_shelf.pdf_extractor import ExtractedPaper
+from paper_shelf.reader_codex import is_available, read
 
 
 @pytest.fixture
@@ -37,15 +37,15 @@ def valid_response():
 
 
 def test_is_available():
-    with patch("src.reader_codex.shutil.which", return_value="/usr/bin/codex"):
+    with patch("paper_shelf.reader_codex.shutil.which", return_value="/usr/bin/codex"):
         assert is_available() is True
 
-    with patch("src.reader_codex.shutil.which", return_value=None):
+    with patch("paper_shelf.reader_codex.shutil.which", return_value=None):
         assert is_available() is False
 
 
 def test_read_not_available(sample_paper):
-    with patch("src.reader_codex.shutil.which", return_value=None):
+    with patch("paper_shelf.reader_codex.shutil.which", return_value=None):
         with pytest.raises(CodexReaderError, match="not found"):
             read(sample_paper)
 
@@ -58,8 +58,8 @@ def test_read_success_from_stdout(sample_paper, valid_response):
     })()
 
     with (
-        patch("src.reader_codex.shutil.which", return_value="/usr/bin/codex"),
-        patch("src.reader_codex.subprocess.run", return_value=mock_result),
+        patch("paper_shelf.reader_codex.shutil.which", return_value="/usr/bin/codex"),
+        patch("paper_shelf.reader_codex.subprocess.run", return_value=mock_result),
     ):
         result = read(sample_paper)
 
@@ -74,8 +74,8 @@ def test_read_cli_failure(sample_paper):
     })()
 
     with (
-        patch("src.reader_codex.shutil.which", return_value="/usr/bin/codex"),
-        patch("src.reader_codex.subprocess.run", return_value=mock_result),
+        patch("paper_shelf.reader_codex.shutil.which", return_value="/usr/bin/codex"),
+        patch("paper_shelf.reader_codex.subprocess.run", return_value=mock_result),
     ):
         with pytest.raises(CodexReaderError, match="failed"):
             read(sample_paper)
@@ -85,9 +85,9 @@ def test_read_timeout(sample_paper):
     import subprocess
 
     with (
-        patch("src.reader_codex.shutil.which", return_value="/usr/bin/codex"),
+        patch("paper_shelf.reader_codex.shutil.which", return_value="/usr/bin/codex"),
         patch(
-            "src.reader_codex.subprocess.run",
+            "paper_shelf.reader_codex.subprocess.run",
             side_effect=subprocess.TimeoutExpired("codex", 600),
         ),
     ):
@@ -105,8 +105,8 @@ def test_read_markdown_json(sample_paper, valid_response):
     })()
 
     with (
-        patch("src.reader_codex.shutil.which", return_value="/usr/bin/codex"),
-        patch("src.reader_codex.subprocess.run", return_value=mock_result),
+        patch("paper_shelf.reader_codex.shutil.which", return_value="/usr/bin/codex"),
+        patch("paper_shelf.reader_codex.subprocess.run", return_value=mock_result),
     ):
         result = read(sample_paper)
 

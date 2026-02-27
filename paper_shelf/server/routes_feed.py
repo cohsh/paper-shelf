@@ -5,9 +5,9 @@ import threading
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from src import library
-from src.exceptions import StorageError
-from src.server.tasks import run_feed_pipeline, run_url_reading_pipeline
+from paper_shelf import library
+from paper_shelf.exceptions import StorageError
+from paper_shelf.server.tasks import run_feed_pipeline, run_url_reading_pipeline
 
 router = APIRouter()
 
@@ -44,7 +44,7 @@ def get_feed(shelf_id: str, request: Request) -> dict:
     """Get saved feed results for a shelf."""
     output_dir = request.app.state.output_dir
 
-    from src import daily_feed
+    from paper_shelf import daily_feed
 
     feed = daily_feed.load_feed(shelf_id, output_dir)
     if not feed:

@@ -8,7 +8,7 @@ import shutil
 import unicodedata
 from datetime import datetime, timezone
 
-from src.exceptions import StorageError
+from paper_shelf.exceptions import StorageError
 
 logger = logging.getLogger(__name__)
 

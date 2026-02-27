@@ -116,7 +116,7 @@ pytest
 
 ```
 paper-shelf/
-├── src/
+├── paper_shelf/
 │   ├── main.py              # CLI entry point (Click)
 │   ├── pdf_extractor.py      # PDF text extraction (PyMuPDF)
 │   ├── reader_claude.py      # Claude Code CLI integration

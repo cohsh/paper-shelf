@@ -3,8 +3,8 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from src import library
-from src.exceptions import StorageError
+from paper_shelf import library
+from paper_shelf.exceptions import StorageError
 
 router = APIRouter()
 

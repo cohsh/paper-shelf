@@ -3,7 +3,7 @@
 Python 3.11+ project. A personal academic paper library powered by LLMs.
 
 ## Structure
-- `src/` - Source code
+- `paper_shelf/` - Source code
 - `prompts/` - Prompt templates and JSON schema
 - `library/` - Output directory (gitignored)
 - `papers/` - Input PDFs (gitignored)

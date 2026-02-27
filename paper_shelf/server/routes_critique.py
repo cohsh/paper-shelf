@@ -5,9 +5,9 @@ import threading
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from src import critique, library
-from src.exceptions import ClaudeReaderError, StorageError
-from src.server.tasks import run_critique_pipeline
+from paper_shelf import critique, library
+from paper_shelf.exceptions import ClaudeReaderError, StorageError
+from paper_shelf.server.tasks import run_critique_pipeline
 
 router = APIRouter()
 

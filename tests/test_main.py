@@ -6,9 +6,9 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
-from src.main import cli
-from src.storage import save
-from src.library import update_index
+from paper_shelf.main import cli
+from paper_shelf.storage import save
+from paper_shelf.library import update_index
 
 
 @pytest.fixture

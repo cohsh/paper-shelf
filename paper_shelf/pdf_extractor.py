@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import pymupdf
 
-from src.exceptions import PDFExtractionError
+from paper_shelf.exceptions import PDFExtractionError
 
 
 @dataclass

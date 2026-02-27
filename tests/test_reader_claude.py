@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
-from src.exceptions import ClaudeReaderError
-from src.pdf_extractor import ExtractedPaper
-from src.reader_claude import read
+from paper_shelf.exceptions import ClaudeReaderError
+from paper_shelf.pdf_extractor import ExtractedPaper
+from paper_shelf.reader_claude import read
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def test_read_success(sample_paper, valid_response):
         "stderr": "",
     })()
 
-    with patch("src.reader_claude.subprocess.run", return_value=mock_result):
+    with patch("paper_shelf.reader_claude.subprocess.run", return_value=mock_result):
         result = read(sample_paper)
 
     assert result["title"] == "Test Paper"
@@ -58,7 +58,7 @@ def test_read_direct_json(sample_paper, valid_response):
         "stderr": "",
     })()
 
-    with patch("src.reader_claude.subprocess.run", return_value=mock_result):
+    with patch("paper_shelf.reader_claude.subprocess.run", return_value=mock_result):
         result = read(sample_paper)
 
     assert result["title"] == "Test Paper"
@@ -71,7 +71,7 @@ def test_read_cli_failure(sample_paper):
         "stderr": "Error occurred",
     })()
 
-    with patch("src.reader_claude.subprocess.run", return_value=mock_result):
+    with patch("paper_shelf.reader_claude.subprocess.run", return_value=mock_result):
         with pytest.raises(ClaudeReaderError, match="failed"):
             read(sample_paper)
 
@@ -83,7 +83,7 @@ def test_read_invalid_json(sample_paper):
         "stderr": "",
     })()
 
-    with patch("src.reader_claude.subprocess.run", return_value=mock_result):
+    with patch("paper_shelf.reader_claude.subprocess.run", return_value=mock_result):
         with pytest.raises(ClaudeReaderError, match="Failed to parse"):
             read(sample_paper)
 
@@ -92,7 +92,7 @@ def test_read_timeout(sample_paper):
     import subprocess
 
     with patch(
-        "src.reader_claude.subprocess.run",
+        "paper_shelf.reader_claude.subprocess.run",
         side_effect=subprocess.TimeoutExpired("claude", 600),
     ):
         with pytest.raises(ClaudeReaderError, match="timed out"):
@@ -101,7 +101,7 @@ def test_read_timeout(sample_paper):
 
 def test_read_cli_not_found(sample_paper):
     with patch(
-        "src.reader_claude.subprocess.run",
+        "paper_shelf.reader_claude.subprocess.run",
         side_effect=FileNotFoundError,
     ):
         with pytest.raises(ClaudeReaderError, match="not found"):

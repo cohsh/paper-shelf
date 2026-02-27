@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from src.server.tasks import TaskManager
+from paper_shelf.server.tasks import TaskManager
 
 
 def create_app(output_dir: str = "library", dev_mode: bool = False) -> FastAPI:
@@ -26,12 +26,12 @@ def create_app(output_dir: str = "library", dev_mode: bool = False) -> FastAPI:
         )
 
     # Register API routes
-    from src.server.routes_critique import router as critique_router
-    from src.server.routes_discovery import router as discovery_router
-    from src.server.routes_feed import router as feed_router
-    from src.server.routes_papers import router as papers_router
-    from src.server.routes_shelves import router as shelves_router
-    from src.server.routes_upload import router as upload_router
+    from paper_shelf.server.routes_critique import router as critique_router
+    from paper_shelf.server.routes_discovery import router as discovery_router
+    from paper_shelf.server.routes_feed import router as feed_router
+    from paper_shelf.server.routes_papers import router as papers_router
+    from paper_shelf.server.routes_shelves import router as shelves_router
+    from paper_shelf.server.routes_upload import router as upload_router
 
     app.include_router(papers_router, prefix="/api")
     app.include_router(shelves_router, prefix="/api")

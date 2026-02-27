@@ -7,7 +7,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
-from src.exceptions import DiscoveryError
+from paper_shelf.exceptions import DiscoveryError
 
 logger = logging.getLogger(__name__)
 

@@ -8,7 +8,7 @@ from dataclasses import asdict
 
 from fastapi import APIRouter, Form, HTTPException, Request, UploadFile
 
-from src.server.tasks import TaskManager, run_reading_pipeline
+from paper_shelf.server.tasks import TaskManager, run_reading_pipeline
 
 router = APIRouter()
 

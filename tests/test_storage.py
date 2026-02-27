@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 
-from src.storage import generate_paper_id, save
+from paper_shelf.storage import generate_paper_id, save
 
 
 @pytest.fixture
